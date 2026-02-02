@@ -14,6 +14,15 @@ const adminAuth = require('./controllers/coreControllers/adminAuth');
 const errorHandlers = require('./handlers/errorHandlers');
 const erpApiRouter = require('./routes/appRoutes/appApi');
 
+
+const villaApiRouter = require('./routes/appRoutes/villaApi');
+const villaProgressApiRouter = require('./routes/appRoutes/villaProgressApi');
+const labourApiRouter = require('./routes/appRoutes/labourApi');
+const attendanceApiRouter = require('./routes/appRoutes/attendanceApi');
+const reportingApiRouter = require('./routes/appRoutes/reportingApi');
+const bookingApiRouter = require('./routes/appRoutes/bookingApi');
+const chatApiRouter = require('./routes/appRoutes/chatRoutes');
+
 const fileUpload = require('express-fileupload');
 // create our Express app
 const app = express();
@@ -39,6 +48,13 @@ app.use(compression());
 app.use('/api', coreAuthRouter);
 app.use('/api', adminAuth.isValidAuthToken, coreApiRouter);
 app.use('/api', adminAuth.isValidAuthToken, erpApiRouter);
+app.use('/api', adminAuth.isValidAuthToken, villaApiRouter);
+app.use('/api', adminAuth.isValidAuthToken, villaProgressApiRouter);
+app.use('/api', adminAuth.isValidAuthToken, labourApiRouter);
+app.use('/api', adminAuth.isValidAuthToken, attendanceApiRouter);
+app.use('/api', adminAuth.isValidAuthToken, reportingApiRouter);
+app.use('/api', adminAuth.isValidAuthToken, bookingApiRouter);
+app.use('/api', adminAuth.isValidAuthToken, chatApiRouter);
 app.use('/download', coreDownloadRouter);
 app.use('/public', corePublicRouter);
 

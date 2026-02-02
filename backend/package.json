@@ -1,5 +1,5 @@
 {
-  "name": "idurar-erp-crm",
+  "name": "brick-flow-backend",
   "version": "4.1.0",
   "engines": {
     "npm": "10.2.4",
@@ -31,6 +31,7 @@
     "lodash": "^4.17.21",
     "module-alias": "^2.2.3",
     "moment": "^2.30.1",
+    "mongodb": "^7.0.0",
     "mongoose": "^8.1.1",
     "mongoose-autopopulate": "^1.1.0",
     "multer": "^1.4.4",
@@ -48,15 +49,15 @@
     "@": "src"
   },
   "main": "server.js",
-  "author": "IDURAR",
-  "email": "hello@idurarapp.com",
+  "author": "BrickFlow",
+  "email": "hello@brickflowapp.com",
   "license": "Fair-code License",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/idurar/idurar-erp-crm/.git"
+    "url": "git+https://github.com/brickflow/brick-flow-backend/.git"
   },
   "bugs": {
-    "url": "https://github.com/idurar/idurar-erp-crm//issues"
+    "url": "https://github.com/brickflow/brick-flow-backend/issues"
   },
-  "homepage": "https://github.com/idurar/idurar-erp-crm/#readme"
+  "homepage": "https://github.com/brickflow/brick-flow-backend/#readme"
 }

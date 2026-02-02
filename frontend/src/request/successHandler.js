@@ -1,4 +1,4 @@
-import { notification } from 'antd';
+import { notification } from '@/utils/antdGlobal';
 
 import codeMessage from './codeMessage';
 
@@ -9,13 +9,10 @@ const successHandler = (response, options = { notifyOnSuccess: false, notifyOnFa
     const successText = message || codeMessage[response.status];
 
     if (options.notifyOnSuccess) {
-      notification.config({
-        duration: 2,
-        maxCount: 2,
-      });
       notification.success({
         message: `Request success`,
         description: successText,
+        duration: 2,
       });
     }
   } else {
@@ -23,13 +20,10 @@ const successHandler = (response, options = { notifyOnSuccess: false, notifyOnFa
     const errorText = message || codeMessage[response.status];
     const { status } = response;
     if (options.notifyOnFailed) {
-      notification.config({
-        duration: 4,
-        maxCount: 2,
-      });
       notification.error({
         message: `Request error ${status}`,
         description: errorText,
+        duration: 4,
       });
     }
   }

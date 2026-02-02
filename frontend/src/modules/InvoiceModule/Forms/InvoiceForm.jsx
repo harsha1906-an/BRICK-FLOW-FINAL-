@@ -8,7 +8,7 @@ import { DatePicker } from 'antd';
 
 import AutoCompleteAsync from '@/components/AutoCompleteAsync';
 
-import ItemRow from '@/modules/ErpPanelModule/ItemRow';
+import InvoiceItemRow from './InvoiceItemRow';
 
 import MoneyInputFormItem from '@/components/MoneyInputFormItem';
 import { selectFinanceSettings } from '@/redux/settings/selectors';
@@ -29,15 +29,19 @@ export default function InvoiceForm({ subTotal = 0, current = null }) {
   return <LoadInvoiceForm subTotal={subTotal} current={current} />;
 }
 
+import { request } from '@/request';
+
 function LoadInvoiceForm({ subTotal = 0, current = null }) {
   const translate = useLanguage();
   const { dateFormat } = useDate();
+  const form = Form.useFormInstance();
   const { last_invoice_number } = useSelector(selectFinanceSettings);
   const [total, setTotal] = useState(0);
   const [taxRate, setTaxRate] = useState(0);
   const [taxTotal, setTaxTotal] = useState(0);
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
   const [lastNumber, setLastNumber] = useState(() => last_invoice_number + 1);
+  const [clientStats, setClientStats] = useState(null);
 
   const handelTaxChange = (value) => {
     setTaxRate(value / 100);
@@ -63,10 +67,55 @@ function LoadInvoiceForm({ subTotal = 0, current = null }) {
     addField.current.click();
   }, []);
 
+  /* New Hook to watch form value */
+  const villaId = Form.useWatch('villa');
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (villaId) {
+        try {
+          const response = await request.list({ entity: 'booking', options: { villa: villaId } });
+          if (response.success && response.result.length > 0) {
+            const booking = response.result[0];
+            // Calculate paid amount from paymentPlan
+            let paid = 0;
+            if (booking.paymentPlan) {
+              paid = booking.paymentPlan.reduce((sum, p) => sum + (p.paidAmount || 0), 0);
+            }
+
+            // Auto-populate the first item with Villa details if empty
+            if (form) {
+              const currentItems = form.getFieldValue('items');
+              if (currentItems && currentItems.length > 0 && !currentItems[0].itemName) {
+                const villaName = response.result[0].villa?.villaNumber || 'Villa';
+                form.setFieldValue(['items', 0, 'itemName'], `Payment for ${villaName}`);
+              }
+            }
+
+            setClientStats({
+              totalAgreement: booking.totalAmount,
+              totalPaid: paid,
+              balance: booking.totalAmount - paid,
+              count: 1
+            });
+          } else {
+            setClientStats(null);
+          }
+        } catch (e) {
+          console.error(e);
+          setClientStats(null);
+        }
+      } else {
+        setClientStats(null);
+      }
+    };
+    fetchStats();
+  }, [villaId]);
+
   return (
     <>
       <Row gutter={[12, 0]}>
-        <Col className="gutter-row" span={8}>
+        <Col className="gutter-row" span={6}>
           <Form.Item
             name="client"
             label={translate('Client')}
@@ -85,6 +134,39 @@ function LoadInvoiceForm({ subTotal = 0, current = null }) {
               urlToRedirect={'/customer'}
             />
           </Form.Item>
+        </Col>
+        <Col className="gutter-row" span={8}>
+          <Form.Item
+            name="villa"
+            label={translate('Villa')}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <SelectAsync
+              entity={'villa'}
+              displayLabels={['villaNumber']}
+              outputValue={'_id'}
+            />
+          </Form.Item>
+          {clientStats && (
+            <div style={{
+              marginTop: '5px',
+              padding: '10px',
+              background: '#f6ffed',
+              border: '1px solid #b7eb8f',
+              borderRadius: '4px'
+            }}>
+              <h4 style={{ margin: '0 0 5px 0', color: '#135200' }}>Property Financial Summary</h4>
+              <div style={{ display: 'flex', gap: '15px', fontSize: '13px' }}>
+                <div><strong>Total Booked:</strong> {clientStats?.totalAgreement?.toLocaleString()}</div>
+                <div><strong>Total Paid:</strong> {clientStats?.totalPaid?.toLocaleString()}</div>
+                <div><strong>Balance:</strong> <span style={{ color: clientStats?.balance > 0 ? 'red' : 'green' }}>{clientStats?.balance?.toLocaleString()}</span></div>
+              </div>
+            </div>
+          )}
         </Col>
         <Col className="gutter-row" span={3}>
           <Form.Item
@@ -166,6 +248,20 @@ function LoadInvoiceForm({ subTotal = 0, current = null }) {
             <DatePicker style={{ width: '100%' }} format={dateFormat} />
           </Form.Item>
         </Col>
+        <Col className="gutter-row" span={5}>
+          <Form.Item
+            name="buildingStage"
+            label="Building Stage"
+          >
+            <Select placeholder="Select Stage">
+              <Select.Option value="foundation">Foundation</Select.Option>
+              <Select.Option value="structure">Structure</Select.Option>
+              <Select.Option value="plastering">Plastering</Select.Option>
+              <Select.Option value="finishing">Finishing</Select.Option>
+              <Select.Option value="other">Other</Select.Option>
+            </Select>
+          </Form.Item>
+        </Col>
         <Col className="gutter-row" span={10}>
           <Form.Item label={translate('Note')} name="notes">
             <Input />
@@ -174,27 +270,21 @@ function LoadInvoiceForm({ subTotal = 0, current = null }) {
       </Row>
       <Divider dashed />
       <Row gutter={[12, 12]} style={{ position: 'relative' }}>
-        <Col className="gutter-row" span={5}>
-          <p>{translate('Item')}</p>
+        <Col className="gutter-row" span={10}>
+          <p>{translate('Property / Unit')}</p>
         </Col>
-        <Col className="gutter-row" span={7}>
+        <Col className="gutter-row" span={8}>
           <p>{translate('Description')}</p>
         </Col>
-        <Col className="gutter-row" span={3}>
-          <p>{translate('Quantity')}</p>{' '}
-        </Col>
-        <Col className="gutter-row" span={4}>
-          <p>{translate('Price')}</p>
-        </Col>
-        <Col className="gutter-row" span={5}>
-          <p>{translate('Total')}</p>
+        <Col className="gutter-row" span={6}>
+          <p>{translate('Amount')}</p>
         </Col>
       </Row>
       <Form.List name="items">
         {(fields, { add, remove }) => (
           <>
             {fields.map((field) => (
-              <ItemRow key={field.key} remove={remove} field={field} current={current}></ItemRow>
+              <InvoiceItemRow key={field.key} remove={remove} field={field} current={current}></InvoiceItemRow>
             ))}
             <Form.Item>
               <Button
@@ -204,7 +294,7 @@ function LoadInvoiceForm({ subTotal = 0, current = null }) {
                 icon={<PlusOutlined />}
                 ref={addField}
               >
-                {translate('Add field')}
+                {translate('Add Item')}
               </Button>
             </Form.Item>
           </>

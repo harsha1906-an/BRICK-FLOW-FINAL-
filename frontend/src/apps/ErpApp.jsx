@@ -21,20 +21,39 @@ import AppRouter from '@/router/AppRouter';
 import useResponsive from '@/hooks/useResponsive';
 
 import storePersist from '@/redux/storePersist';
+import { request } from '@/request';
+
+import useMobile from '@/hooks/useMobile';
 
 export default function ErpCrmApp() {
   const { Content } = Layout;
 
-  // const { state: stateApp, appContextAction } = useAppContext();
-  // // const { app } = appContextAction;
-  // const { isNavMenuClose, currentApp } = stateApp;
+  const { state: stateApp, appContextAction } = useAppContext();
+  const { isNavMenuClose, currentApp } = stateApp;
 
-  const { isMobile } = useResponsive();
+  const isMobile = useMobile();
 
   const dispatch = useDispatch();
 
   useLayoutEffect(() => {
     dispatch(settingsAction.list({ entity: 'setting' }));
+  }, []);
+
+  useEffect(() => {
+    const fetchDefaultCompany = async () => {
+      try {
+        const data = await request.list({ entity: 'company' });
+        console.log('Company Fetch Result:', data);
+        if (data.success && data.result && data.result.length > 0) {
+          appContextAction.company.set(data.result[0]._id);
+        } else {
+          console.log('No companies found or fetch failed');
+        }
+      } catch (err) {
+        console.error('Failed to fetch companies:', err);
+      }
+    };
+    fetchDefaultCompany();
   }, []);
 
   // const appSettings = useSelector(selectAppSettings);
@@ -43,7 +62,7 @@ export default function ErpCrmApp() {
 
   // useEffect(() => {
   //   const { loadDefaultLang } = storePersist.get('firstVisit');
-  //   if (appSettings.idurar_app_language && !loadDefaultLang) {
+  //   if (appSettings.brickflow_app_language && !loadDefaultLang) {
   //     window.localStorage.setItem('firstVisit', JSON.stringify({ loadDefaultLang: true }));
   //   }
   // }, [appSettings]);
@@ -56,30 +75,14 @@ export default function ErpCrmApp() {
         {isMobile ? (
           <Layout style={{ marginLeft: 0 }}>
             <HeaderContent />
-            <Content
-              style={{
-                margin: '40px auto 30px',
-                overflow: 'initial',
-                width: '100%',
-                padding: '0 25px',
-                maxWidth: 'none',
-              }}
-            >
+            <Content className="erp-content">
               <AppRouter />
             </Content>
           </Layout>
         ) : (
           <Layout>
             <HeaderContent />
-            <Content
-              style={{
-                margin: '40px auto 30px',
-                overflow: 'initial',
-                width: '100%',
-                padding: '0 50px',
-                maxWidth: 1400,
-              }}
-            >
+            <Content className="erp-content">
               <AppRouter />
             </Content>
           </Layout>

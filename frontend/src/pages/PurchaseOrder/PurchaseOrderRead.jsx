@@ -1,0 +1,21 @@
+import useLanguage from '@/locale/useLanguage';
+import ReadPurchaseOrderModule from '@/modules/PurchaseOrderModule/ReadPurchaseOrderModule';
+
+export default function PurchaseOrderRead() {
+    const translate = useLanguage();
+
+    const entity = 'purchaseorder';
+
+    const Labels = {
+        PANEL_TITLE: translate('purchase_order'),
+        DATATABLE_TITLE: translate('purchase_order_list'),
+        ADD_NEW_ENTITY: translate('add_new_purchase_order'),
+        ENTITY_NAME: translate('purchase_order'),
+    };
+
+    const configPage = {
+        entity,
+        ...Labels,
+    };
+    return <ReadPurchaseOrderModule config={configPage} />;
+}

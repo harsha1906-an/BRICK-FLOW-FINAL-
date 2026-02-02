@@ -20,6 +20,24 @@ const update = async (req, res) => {
     });
   }
 
+  // Check if user is Owner
+  if (req.admin.role !== 'owner') {
+    const InvoiceUpdate = mongoose.model('InvoiceUpdate');
+
+    // Create a update request
+    await InvoiceUpdate.create({
+      invoice: req.params.id,
+      requestedBy: req.admin._id,
+      requestedChanges: req.body,
+    });
+
+    return res.status(200).json({
+      success: true,
+      result: null,
+      message: 'Update request submitted for Owner approval',
+    });
+  }
+
   const previousInvoice = await Model.findOne({
     _id: req.params.id,
     removed: false,

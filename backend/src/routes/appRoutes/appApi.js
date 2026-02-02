@@ -20,8 +20,28 @@ const routerApp = (entity, controller) => {
     router.route(`/${entity}/mail`).post(catchErrors(controller['mail']));
   }
 
+  if (entity === 'payment' || entity === 'invoice') {
+    router.route(`/${entity}/approve/:id`).post(catchErrors(controller['approveUpdate']));
+    router.route(`/${entity}/reject/:id`).post(catchErrors(controller['rejectUpdate']));
+  }
+
   if (entity === 'quote') {
     router.route(`/${entity}/convert/:id`).get(catchErrors(controller['convert']));
+  }
+
+  if (entity === 'lead') {
+    router.route(`/${entity}/convert/:id`).post(catchErrors(controller['convert']));
+  }
+
+  if (entity === 'material') {
+    router.route(`/${entity}/adjust/:id`).post(catchErrors(controller['adjustStock']));
+    router.route(`/${entity}/history/:id`).get(catchErrors(controller['history']));
+  }
+
+  if (entity === 'purchaseorder') {
+    router.route(`/${entity}/submit/:id`).patch(catchErrors(controller['submit']));
+    router.route(`/${entity}/approve/:id`).patch(catchErrors(controller['approve']));
+    router.route(`/${entity}/reject/:id`).patch(catchErrors(controller['reject']));
   }
 };
 

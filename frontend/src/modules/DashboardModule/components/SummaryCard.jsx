@@ -13,15 +13,15 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
       sm={{ span: 12 }}
       md={{ span: 12 }}
       lg={{ span: 6 }}
+      style={{ marginBottom: window.innerWidth <= 768 ? 0 : undefined }}
     >
       <div
         className="whiteBox shadow"
-        style={{ color: '#595959', fontSize: 13, minHeight: '106px', height: '100%' }}
+        style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: 13, minHeight: '106px', height: '100%' }}
       >
-        <div className="pad15 strong" style={{ textAlign: 'center', justifyContent: 'center' }}>
+        <div className="pad15 strong" style={{ textAlign: 'center', justifyContent: 'center', padding: window.innerWidth <= 768 ? '8px' : undefined }}>
           <h3
             style={{
-              color: '#22075e',
               fontSize: 'large',
               margin: '5px 0',
               textTransform: 'capitalize',
@@ -31,10 +31,10 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
           </h3>
         </div>
         <Divider style={{ padding: 0, margin: 0 }}></Divider>
-        <div className="pad15">
+        <div className="pad15" style={{ padding: window.innerWidth <= 768 ? '8px' : undefined }}>
           <Row gutter={[0, 0]} justify="space-between" wrap={false}>
             <Col className="gutter-row" flex="85px" style={{ textAlign: 'left' }}>
-              <div className="left" style={{ whiteSpace: 'nowrap' }}>
+              <div className="left" style={{ whiteSpace: 'nowrap', color: 'rgba(255, 255, 255, 0.45)' }}>
                 {prefix}
               </div>
             </Col>
@@ -79,13 +79,13 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
                   >
                     {data
                       ? moneyFormatter({
-                          amount: data,
-                          currency_code: money_format_settings?.default_currency_code,
-                        })
+                        amount: data,
+                        currency_code: money_format_settings?.default_currency_code,
+                      })
                       : moneyFormatter({
-                          amount: 0,
-                          currency_code: money_format_settings?.default_currency_code,
-                        })}
+                        amount: 0,
+                        currency_code: money_format_settings?.default_currency_code,
+                      })}
                   </Tag>
                 </Tooltip>
               )}

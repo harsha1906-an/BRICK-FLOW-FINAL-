@@ -5,8 +5,7 @@ import { Button, Drawer, Layout, Menu } from 'antd';
 import { useAppContext } from '@/context/appContext';
 
 import useLanguage from '@/locale/useLanguage';
-import logoIcon from '@/style/images/logo-icon.svg';
-import logoText from '@/style/images/logo-text.svg';
+import logo from '@/style/images/colored-logo.png';
 
 import useResponsive from '@/hooks/useResponsive';
 
@@ -26,14 +25,27 @@ import {
   FilterOutlined,
   WalletOutlined,
   ReconciliationOutlined,
+  FileDoneOutlined,
+  ProjectOutlined,
+  TeamOutlined,
+  FileProtectOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
 
-export default function Navigation() {
-  const { isMobile } = useResponsive();
+import useMobile from '@/hooks/useMobile'; // Keep hook for other logic if needed
 
-  return isMobile ? <MobileSidebar /> : <Sidebar collapsible={false} />;
+export default function Navigation() {
+  return (
+    <>
+      <div className="mobile-only">
+        <MobileSidebar />
+      </div>
+      <div className="desktop-only">
+        <Sidebar collapsible={false} />
+      </div>
+    </>
+  );
 }
 
 function Sidebar({ collapsible, isMobile = false }) {
@@ -59,7 +71,51 @@ function Sidebar({ collapsible, isMobile = false }) {
       icon: <CustomerServiceOutlined />,
       label: <Link to={'/customer'}>{translate('customers')}</Link>,
     },
-
+    {
+      key: 'lead',
+      icon: <CustomerServiceOutlined />,
+      label: <Link to={'/lead'}>Leads</Link>,
+    },
+    {
+      key: 'inventory',
+      icon: <FileProtectOutlined />,
+      label: <Link to={'/inventory'}>Inventory</Link>,
+    },
+    {
+      key: 'supplier',
+      icon: <TeamOutlined />,
+      label: <Link to={'/supplier'}>Suppliers</Link>,
+    },
+    {
+      key: 'villa',
+      icon: <ShopOutlined />,
+      label: <Link to={'/villa'}>Villas</Link>,
+    },
+    {
+      key: 'booking',
+      icon: <FileDoneOutlined />,
+      label: <Link to={'/booking'}>Bookings</Link>,
+    },
+    {
+      key: 'labour',
+      icon: <UserOutlined />,
+      label: <Link to={'/labour'}>Labour</Link>,
+    },
+    {
+      key: 'attendance',
+      icon: <TagOutlined />,
+      label: <Link to={'/attendance'}>Attendance</Link>,
+    },
+    {
+      key: 'pettycash',
+      icon: <WalletOutlined />,
+      label: <Link to={'/pettycash'}>Petty Cash</Link>,
+    },
+    {
+      key: 'daily-summary',
+      icon: <ContainerOutlined />,
+      label: <Link to={'/daily-summary'}>Daily Expenses</Link>,
+    },
     {
       key: 'invoice',
       icon: <ContainerOutlined />,
@@ -71,16 +127,21 @@ function Sidebar({ collapsible, isMobile = false }) {
       label: <Link to={'/quote'}>{translate('quote')}</Link>,
     },
     {
+      key: 'purchaseorder',
+      icon: <FileDoneOutlined />,
+      label: <Link to={'/purchaseorder'}>{translate('purchase_order')}</Link>,
+    },
+    {
       key: 'payment',
       icon: <CreditCardOutlined />,
       label: <Link to={'/payment'}>{translate('payments')}</Link>,
     },
-
     {
-      key: 'paymentMode',
-      label: <Link to={'/payment/mode'}>{translate('payments_mode')}</Link>,
-      icon: <WalletOutlined />,
+      key: 'approvals',
+      icon: <FileProtectOutlined />,
+      label: <Link to={'/approvals'}>{translate('Approvals')}</Link>,
     },
+
     {
       key: 'taxes',
       label: <Link to={'/taxes'}>{translate('taxes')}</Link>,
@@ -127,12 +188,14 @@ function Sidebar({ collapsible, isMobile = false }) {
       collapsible={collapsible}
       collapsed={collapsible ? isNavMenuClose : collapsible}
       onCollapse={onCollapse}
-      className="navigation"
-      width={256}
+      className={isMobile ? "navigation mobile-sider" : "navigation"}
+      width={256} // <--- SIDEBAR WIDTH
       style={{
         overflow: 'auto',
         height: '100vh',
+        background: isMobile ? 'transparent' : undefined, // Transparent for glass effect
 
+        // <--- MOBILE SIDEBAR POSITIONING
         position: isMobile ? 'absolute' : 'relative',
         bottom: '20px',
         ...(!isMobile && {
@@ -142,28 +205,21 @@ function Sidebar({ collapsible, isMobile = false }) {
           // borderRadius: '8px',
         }),
       }}
-      theme={'light'}
+      theme={isMobile ? 'light' : 'dark'}
     >
       <div
         className="logo"
         onClick={() => navigate('/')}
         style={{
           cursor: 'pointer',
+          padding: '25px 20px',
+          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
-        <img src={logoIcon} alt="Logo" style={{ marginLeft: '-5px', height: '40px' }} />
-
-        {!showLogoApp && (
-          <img
-            src={logoText}
-            alt="Logo"
-            style={{
-              marginTop: '3px',
-              marginLeft: '10px',
-              height: '38px',
-            }}
-          />
-        )}
+        <img src={logo} alt="Brick Flow Logo" style={{ height: '70px', maxWidth: '100%', objectFit: 'contain' }} />
       </div>
       <Menu
         items={items}
@@ -172,6 +228,7 @@ function Sidebar({ collapsible, isMobile = false }) {
         selectedKeys={[currentPath]}
         style={{
           width: 256,
+          background: isMobile ? 'transparent' : undefined // Transparent menu
         }}
       />
     </Sider>
@@ -200,11 +257,14 @@ function MobileSidebar() {
       </Button>
       <Drawer
         width={250}
-        // style={{ backgroundColor: 'rgba(255, 255, 255, 1)' }}
         placement={'left'}
         closable={false}
         onClose={onClose}
         open={visible}
+        styles={{
+          body: { padding: 0, height: '100%', backdropFilter: 'blur(20px)', background: 'rgba(0, 21, 41, 0.7)' }
+        }}
+        style={{ background: 'transparent' }}
       >
         <Sidebar collapsible={false} isMobile={true} />
       </Drawer>

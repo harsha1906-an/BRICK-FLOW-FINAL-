@@ -11,14 +11,16 @@ import { selectCurrentAdmin } from '@/redux/auth/selectors';
 import { FILE_BASE_URL } from '@/config/serverApiConfig';
 
 import useLanguage from '@/locale/useLanguage';
-
-import UpgradeButton from './UpgradeButton';
+import logo from '@/style/images/logo.png';
+import useResponsive from '@/hooks/useResponsive';
 
 export default function HeaderContent() {
   const currentAdmin = useSelector(selectCurrentAdmin);
   const { Header } = Layout;
+  const { isMobile } = useResponsive();
 
   const translate = useLanguage();
+  const navigate = useNavigate();
 
   const ProfileDropdown = () => {
     const navigate = useNavigate();
@@ -29,9 +31,9 @@ export default function HeaderContent() {
           className="last"
           src={currentAdmin?.photo ? FILE_BASE_URL + currentAdmin?.photo : undefined}
           style={{
-            color: '#f56a00',
-            backgroundColor: currentAdmin?.photo ? 'none' : '#fde3cf',
-            boxShadow: 'rgba(150, 190, 238, 0.35) 0px 0px 6px 1px',
+            color: '#fff',
+            background: currentAdmin?.photo ? 'none' : 'linear-gradient(135deg, #339393 0%, #1640D6 100%)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
           }}
         >
           {currentAdmin?.name?.charAt(0)?.toUpperCase()}
@@ -88,46 +90,43 @@ export default function HeaderContent() {
     <Header
       style={{
         padding: '20px',
-        background: '#ffffff',
+        background: 'transparent',
         display: 'flex',
-        flexDirection: 'row-reverse',
-        justifyContent: 'flex-start',
-        gap: ' 15px',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
       }}
     >
+      {isMobile && (
+        <div className="mobile-header-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer', position: 'absolute', top: '75%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+          <img src={logo} alt="Logo" style={{ height: '90px' }} />
+        </div>
+      )}
+
       <Dropdown
         menu={{
           items,
         }}
         trigger={['click']}
         placement="bottomRight"
-        stye={{ width: '280px', float: 'right' }}
+        stye={{ width: '280px' }}
       >
-        {/* <Badge dot> */}
         <Avatar
           className="last"
           src={currentAdmin?.photo ? FILE_BASE_URL + currentAdmin?.photo : undefined}
           style={{
-            color: '#f56a00',
-            backgroundColor: currentAdmin?.photo ? 'none' : '#fde3cf',
-            boxShadow: 'rgba(150, 190, 238, 0.35) 0px 0px 10px 2px',
-            float: 'right',
+            color: '#fff',
+            background: currentAdmin?.photo ? 'none' : 'linear-gradient(135deg, #339393 0%, #1640D6 100%)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
             cursor: 'pointer',
+            position: 'absolute',
+            right: '8px',
           }}
           size="large"
         >
           {currentAdmin?.name?.charAt(0)?.toUpperCase()}
         </Avatar>
-        {/* </Badge> */}
       </Dropdown>
-
-      {/* <AppsButton /> */}
-
-      <UpgradeButton />
     </Header>
   );
 }
-
-//  console.log(
-//    '🚀 Welcome to IDURAR ERP CRM! Did you know that we also offer commercial customization services? Contact us at hello@idurarapp.com for more information.'
-//  );

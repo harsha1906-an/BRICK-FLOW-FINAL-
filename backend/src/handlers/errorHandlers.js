@@ -19,13 +19,7 @@ exports.catchErrors = (fn) => {
         });
       } else {
         // Server Error
-        return res.status(500).json({
-          success: false,
-          result: null,
-          message: error.message,
-          controller: fn.name,
-          error: error,
-        });
+        next(error);
       }
     });
   };
@@ -72,6 +66,5 @@ exports.productionErrors = (error, req, res, next) => {
   return res.status(500).json({
     success: false,
     message: error.message,
-    error: error,
   });
 };

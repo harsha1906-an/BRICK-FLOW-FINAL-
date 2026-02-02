@@ -22,6 +22,7 @@ const appControllers = () => {
         controllers[controllerName] = customController;
       }
     } catch (err) {
+      console.error(`Error loading controller "${controllerName}":`, err);
       throw new Error(err.message);
     }
   });

@@ -9,25 +9,25 @@ export const selectCurrentSettings = createSelector(
 
 export const selectMoneyFormat = createSelector(
   [selectCurrentSettings],
-  (settings) => settings.money_format_settings
+  (settings) => settings?.money_format_settings
 );
 
 export const selectAppSettings = createSelector(
   [selectCurrentSettings],
-  (settings) => settings.app_settings
+  (settings) => settings?.app_settings
 );
 
 export const selectFinanceSettings = createSelector(
   [selectCurrentSettings],
-  (settings) => settings.finance_settings
+  (settings) => settings?.finance_settings
 );
 
 export const selectCrmSettings = createSelector(
   [selectCurrentSettings],
-  (settings) => settings.crm_settings
+  (settings) => settings?.crm_settings
 );
 
 export const selectCompanySettings = createSelector(
   [selectCurrentSettings],
-  (settings) => settings.company_settings
+  (settings) => settings?.company_settings
 );

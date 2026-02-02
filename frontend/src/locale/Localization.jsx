@@ -1,4 +1,4 @@
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, theme } from 'antd';
 
 export default function Localization({ children }) {
   return (
@@ -7,8 +7,9 @@ export default function Localization({ children }) {
         token: {
           colorPrimary: '#339393',
           colorLink: '#1640D6',
-          borderRadius: 0,
+          borderRadius: 2,
         },
+        algorithm: theme.darkAlgorithm,
       }}
     >
       {children}

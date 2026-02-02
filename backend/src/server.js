@@ -14,6 +14,11 @@ if (major < 20) {
 require('dotenv').config({ path: '.env' });
 require('dotenv').config({ path: '.env.local' });
 
+if (!process.env.DATABASE || !process.env.JWT_SECRET) {
+  console.error('❌ Error: Missing required environment variables: DATABASE or JWT_SECRET');
+  process.exit(1);
+}
+
 mongoose.connect(process.env.DATABASE);
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;

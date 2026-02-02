@@ -4,6 +4,8 @@ import axios from 'axios';
 import errorHandler from '@/request/errorHandler';
 import successHandler from '@/request/successHandler';
 
+axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
+
 export const login = async ({ loginData }) => {
   try {
     const response = await axios.post(
@@ -103,5 +105,5 @@ export const logout = async () => {
 };
 
 //  console.log(
-//    '🚀 Welcome to IDURAR ERP CRM! Did you know that we also offer commercial customization services? Contact us at hello@idurarapp.com for more information.'
+//    '🚀 Welcome to BRICKFLOW ERP CRM! Did you know that we also offer commercial customization services? Contact us at hello@brickflowapp.com for more information.'
 //  );

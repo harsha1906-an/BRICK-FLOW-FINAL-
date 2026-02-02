@@ -8,6 +8,7 @@ import { useMoney } from '@/settings';
 import { request } from '@/request';
 import useFetch from '@/hooks/useFetch';
 import useOnFetch from '@/hooks/useOnFetch';
+import { useAppContext } from '@/context/appContext';
 
 import RecentTable from './components/RecentTable';
 
@@ -17,6 +18,9 @@ import CustomerPreviewCard from './components/CustomerPreviewCard';
 
 import { selectMoneyFormat } from '@/redux/settings/selectors';
 import { useSelector } from 'react-redux';
+
+import axios from 'axios';
+import dayjs from 'dayjs';
 
 export default function DashboardModule() {
   const translate = useLanguage();
@@ -47,6 +51,27 @@ export default function DashboardModule() {
   const { result: clientResult, isLoading: clientLoading } = useFetch(() =>
     request.summary({ entity: 'client' })
   );
+
+  const [dailyResult, setDailyResult] = useState({ total: 0 });
+  const [dailyLoading, setDailyLoading] = useState(true);
+
+  const { state } = useAppContext();
+  const companyId = state.currentCompany;
+
+  useEffect(() => {
+    const fetchDailyData = async () => {
+      if (!companyId) return;
+      try {
+        const data = await request.get({ entity: `companies/${companyId}/daily-summary?date=${dayjs().format('YYYY-MM-DD')}` });
+        setDailyResult({ total: data.totalDailyExpense });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setDailyLoading(false);
+      }
+    };
+    fetchDailyData();
+  }, []);
 
   useEffect(() => {
     const currency = money_format_settings.default_currency_code || null;
@@ -125,9 +150,12 @@ export default function DashboardModule() {
   });
 
   if (money_format_settings) {
+    const isMobile = window.innerWidth <= 768;
+    const gutterSize = isMobile ? [0, 12] : [16, 16];
+
     return (
       <>
-        <Row gutter={[32, 32]}>
+        <Row gutter={gutterSize}>
           <SummaryCard
             title={translate('Invoices')}
             prefix={translate('This month')}
@@ -147,14 +175,14 @@ export default function DashboardModule() {
             data={paymentResult?.total}
           />
           <SummaryCard
-            title={translate('Unpaid')}
-            prefix={translate('Not Paid')}
-            isLoading={invoiceLoading}
-            data={invoiceResult?.total_undue}
+            title={'Total Daily Cost'} // Using hardcoded text as translation might not exist yet
+            prefix={'Today'}
+            isLoading={dailyLoading}
+            data={dailyResult?.total}
           />
         </Row>
         <div className="space30"></div>
-        <Row gutter={[32, 32]}>
+        <Row gutter={gutterSize}>
           <Col className="gutter-row w-full" sm={{ span: 24 }} md={{ span: 24 }} lg={{ span: 18 }}>
             <div className="whiteBox shadow" style={{ height: 458 }}>
               <Row className="pad20" gutter={[0, 0]}>
@@ -171,10 +199,10 @@ export default function DashboardModule() {
           </Col>
         </Row>
         <div className="space30"></div>
-        <Row gutter={[32, 32]}>
+        <Row gutter={gutterSize}>
           <Col className="gutter-row w-full" sm={{ span: 24 }} lg={{ span: 12 }}>
             <div className="whiteBox shadow pad20" style={{ height: '100%' }}>
-              <h3 style={{ color: '#22075e', marginBottom: 5, padding: '0 20px 20px' }}>
+              <h3 style={{ marginBottom: 5, padding: '0 20px 20px' }}>
                 {translate('Recent Invoices')}
               </h3>
 
@@ -184,7 +212,7 @@ export default function DashboardModule() {
 
           <Col className="gutter-row w-full" sm={{ span: 24 }} lg={{ span: 12 }}>
             <div className="whiteBox shadow pad20" style={{ height: '100%' }}>
-              <h3 style={{ color: '#22075e', marginBottom: 5, padding: '0 20px 20px' }}>
+              <h3 style={{ marginBottom: 5, padding: '0 20px 20px' }}>
                 {translate('Recent Quotes')}
               </h3>
               <RecentTable entity={'quote'} dataTableColumns={dataTableColumns} />

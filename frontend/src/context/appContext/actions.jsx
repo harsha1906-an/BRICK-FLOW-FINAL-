@@ -21,6 +21,11 @@ const contextActions = (dispatch) => {
         dispatch({ type: actionTypes.DEFAULT_APP });
       },
     },
+    company: {
+      set: (company) => {
+        dispatch({ type: actionTypes.SET_COMPANY, payload: company });
+      },
+    },
   };
 };
 

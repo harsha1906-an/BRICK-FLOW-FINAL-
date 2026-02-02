@@ -11,6 +11,7 @@ export default function PaymentMode() {
   const translate = useLanguage();
   const entity = 'paymentMode';
   const searchConfig = {
+    entity: 'paymentMode',
     displayLabels: ['name'],
     searchFields: 'name',
     outputValue: '_id',

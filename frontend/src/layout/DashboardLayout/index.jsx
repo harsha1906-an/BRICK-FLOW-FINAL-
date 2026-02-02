@@ -1,16 +1,11 @@
 import React from 'react';
-
-import { Layout } from 'antd';
-
-const { Content } = Layout;
+import useMobile from '@/hooks/useMobile';
 
 export default function DashboardLayout({ children }) {
+  const isMobile = useMobile();
+
   return (
-    <div
-      style={{
-        marginLeft: 140,
-      }}
-    >
+    <div className="dashboard-content">
       {children}
     </div>
   );

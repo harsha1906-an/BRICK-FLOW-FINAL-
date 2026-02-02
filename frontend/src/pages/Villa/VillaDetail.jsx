@@ -1,0 +1,126 @@
+import React, { useEffect, useState } from 'react';
+import { Card, Descriptions, Button, Modal, Form, Select, InputNumber, Input, Tag, App } from 'antd';
+import { useParams } from 'react-router-dom';
+import { useUserRole } from '@/hooks/useUserRole';
+import { request } from '@/request';
+import { useAppContext } from '@/context/appContext';
+
+const PROGRESS_STAGES = [
+  { value: 'foundation', label: 'Foundation' },
+  { value: 'structure', label: 'Structure' },
+  { value: 'masonry', label: 'Masonry' },
+  { value: 'plastering', label: 'Plastering' },
+  { value: 'flooring', label: 'Flooring' },
+  { value: 'electrical_plumbing', label: 'Electrical & Plumbing' },
+  { value: 'finishing', label: 'Finishing' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'other', label: 'Other' },
+];
+
+const VillaProgressSection = ({ companyId, villaId }) => {
+  const { message } = App.useApp();
+  const [progress, setProgress] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const { role } = useUserRole();
+
+  const fetchProgress = async () => {
+    if (!companyId || !villaId) return;
+    setLoading(true);
+    try {
+      const res = await request.get({ entity: `companies/${companyId}/villas/${villaId}/progress` });
+      setProgress(res);
+    } catch (e) {
+      setProgress(null);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (companyId && villaId) {
+      fetchProgress();
+    }
+    // eslint-disable-next-line
+  }, [villaId, companyId]);
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (modalOpen) {
+      if (progress) {
+        form.setFieldsValue(progress);
+      } else {
+        form.resetFields();
+      }
+    }
+  }, [modalOpen, progress, form]);
+
+  const handleOk = async () => {
+    try {
+      const values = await form.validateFields();
+      await request.post({ entity: `companies/${companyId}/villas/${villaId}/progress`, jsonData: values });
+      message.success('Progress updated');
+      setModalOpen(false);
+      fetchProgress();
+    } catch (e) {
+      if (e?.response?.data?.message) message.error(e.response.data.message);
+      else message.error('Failed to update progress');
+    }
+  };
+
+  return (
+    <Card title="Progress" loading={loading} extra={((role === 'OWNER' || role === 'ENGINEER') && <Button onClick={openModal}>Update Progress</Button>)}>
+      {progress ? (
+        <Descriptions column={1}>
+          <Descriptions.Item label="Stage">
+            {PROGRESS_STAGES.find(s => s.value === progress.stage)?.label || progress.stage}
+            {progress.stage === 'other' && progress.notes ? <span> <Tag color="blue">{progress.notes}</Tag></span> : null}
+          </Descriptions.Item>
+          <Descriptions.Item label="Percentage">{progress.percentage}%</Descriptions.Item>
+          <Descriptions.Item label="Last Updated">{progress.updatedAt ? new Date(progress.updatedAt).toLocaleString() : ''}</Descriptions.Item>
+        </Descriptions>
+      ) : (
+        <span>No progress recorded yet.</span>
+      )}
+      <Modal
+        title="Update Progress"
+        open={modalOpen}
+        onOk={role === 'ACCOUNTANT' ? undefined : handleOk}
+        onCancel={() => setModalOpen(false)}
+        okButtonProps={role === 'ACCOUNTANT' ? { disabled: true } : {}}
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="stage" label="Stage" rules={[{ required: true }]}>
+            <Select options={PROGRESS_STAGES} disabled={role === 'ACCOUNTANT'} />
+          </Form.Item>
+          <Form.Item name="percentage" label="Percentage" rules={[{ required: true, type: 'number', min: 0, max: 100 }]}>
+            <InputNumber min={0} max={100} disabled={role === 'ACCOUNTANT'} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="notes" label="Notes" rules={[]}>
+            <Input disabled={role === 'ACCOUNTANT' || form.getFieldValue('stage') !== 'other'} placeholder="Add details if 'Other'" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </Card>
+  );
+};
+
+const VillaDetail = () => {
+  // Assume route: /villa/:villaId
+  const { villaId } = useParams();
+  const { state } = useAppContext();
+  const companyId = state.currentCompany;
+  // ...fetch villa details as needed...
+  return (
+    <div>
+      {/* ...existing villa details... */}
+      <VillaProgressSection companyId={companyId} villaId={villaId} />
+    </div>
+  );
+};
+
+export default VillaDetail;

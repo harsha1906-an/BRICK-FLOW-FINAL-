@@ -3,6 +3,7 @@ import * as actionTypes from './types';
 export const initialState = {
   isNavMenuClose: false,
   currentApp: 'default',
+  currentCompany: null,
 };
 
 export function contextReducer(state, action) {
@@ -31,6 +32,11 @@ export function contextReducer(state, action) {
       return {
         ...state,
         currentApp: 'default',
+      };
+    case actionTypes.SET_COMPANY:
+      return {
+        ...state,
+        currentCompany: action.payload,
       };
 
     default: {

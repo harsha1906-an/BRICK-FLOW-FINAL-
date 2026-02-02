@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Model = mongoose.model('Setting');
 
 const listAll = async (req, res) => {
-  const sort = parseInt(req.query.sort) || 'desc';
+  const sort = parseInt(req.query.sort) || 'asc';
 
   //  Query the database for a list of all results
   const result = await Model.find({
-    removed: false,
-    isPrivate: false,
+    removed: { $ne: true },
+    isPrivate: { $ne: true },
   }).sort({ created: sort });
 
   if (result.length > 0) {

@@ -8,6 +8,7 @@ export default function Customer() {
   const translate = useLanguage();
   const entity = 'client';
   const searchConfig = {
+    entity: 'client',
     displayLabels: ['name'],
     searchFields: 'name',
   };

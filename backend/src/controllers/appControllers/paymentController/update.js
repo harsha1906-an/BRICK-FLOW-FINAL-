@@ -14,6 +14,24 @@ const update = async (req, res) => {
       message: `The Minimum Amount couldn't be 0`,
     });
   }
+
+  // Check if user is Owner
+  if (req.admin.role !== 'owner') {
+    const PaymentUpdate = mongoose.model('PaymentUpdate');
+
+    // Create a update request
+    await PaymentUpdate.create({
+      payment: req.params.id,
+      requestedBy: req.admin._id,
+      requestedChanges: req.body,
+    });
+
+    return res.status(200).json({
+      success: true,
+      result: null,
+      message: 'Update request submitted for Owner approval',
+    });
+  }
   // Find document by id and updates with the required fields
   const previousPayment = await Model.findOne({
     _id: req.params.id,
@@ -41,8 +59,8 @@ const update = async (req, res) => {
     calculate.sub(total, discount) === calculate.add(previousCredit, changedAmount)
       ? 'paid'
       : calculate.add(previousCredit, changedAmount) > 0
-      ? 'partially'
-      : 'unpaid';
+        ? 'partially'
+        : 'unpaid';
 
   const updatedDate = new Date();
   const updates = {

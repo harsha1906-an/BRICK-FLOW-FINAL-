@@ -6,6 +6,8 @@ const custom = require('@/controllers/pdfController');
 
 const { calculate } = require('@/helpers');
 
+const { logAuditAction } = require('../../../modules/AuditLogModule');
+
 const create = async (req, res) => {
   // Creating a new document in the collection
   if (req.body.amount === 0) {
@@ -76,11 +78,21 @@ const create = async (req, res) => {
     }
   ).exec();
 
-  return res.status(200).json({
+  res.status(200).json({
     success: true,
     result: updatePath,
     message: 'Payment Invoice created successfully',
   });
+  // Audit log (fail-safe, after success)
+  logAuditAction({
+    req,
+    module: 'payment',
+    action: 'create',
+    entityType: 'Payment',
+    entityId: result._id,
+    metadata: { amount: result.amount, invoice: result.invoice, client: result.client }
+  });
+  return;
 };
 
 module.exports = create;

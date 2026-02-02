@@ -1,0 +1,162 @@
+const Booking = require('../../models/appModels/Booking');
+const Villa = require('../../models/appModels/Villa');
+
+const create = async (req, res) => {
+    const bookingData = req.body;
+    const createdBy = req.admin._id;
+
+    try {
+        // 1. Check if Villa is available
+        // We remove companyId check here or assume it's implicit/managed globally
+        const villa = await Villa.findOne({ _id: bookingData.villa });
+
+        if (!villa) {
+            return res.status(404).json({ success: false, message: 'Villa not found' });
+        }
+
+        if (villa.status && villa.status.toLowerCase() !== 'available') {
+            return res.status(400).json({ success: false, message: 'Villa is not available for booking' });
+        }
+
+        // 2. Create Booking
+        // We attach createdBy just in case, though schema used companyId. 
+        // We might need to adjust schema to be consistent with Invoice if strict.
+        // For now, let's keep companyId if we can find it, or mock it, or just use what we have.
+        // If Villa has companyId, maybe we use that?
+        if (villa.companyId) {
+            bookingData.companyId = villa.companyId;
+        }
+
+        // bookingData.createdBy = createdBy; // If we add this field to schema
+
+        const booking = new Booking(bookingData);
+        await booking.save();
+
+        // 3. Update Villa Status
+        villa.status = 'booked';
+        await villa.save();
+
+        return res.status(200).json({ success: true, result: booking, message: 'Booking created successfully' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Failed to create booking', error: error.message });
+    }
+};
+
+const list = async (req, res) => {
+    try {
+        const { page = 1, items = 10, ...queryParams } = req.query;
+        const limit = parseInt(items);
+        const skip = page * limit - limit;
+
+        const query = { removed: false };
+        // Allow filtering by specific fields if present in query
+        if (queryParams.villa) query.villa = queryParams.villa;
+        if (queryParams.client) query.client = queryParams.client;
+        if (queryParams.status) query.status = queryParams.status;
+
+        const bookings = await Booking.find(query)
+            .populate('villa')
+            .populate('client')
+            .sort({ created: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const count = await Booking.countDocuments(query);
+        const pages = Math.ceil(count / limit);
+
+        return res.status(200).json({
+            success: true,
+            result: bookings,
+            pagination: { page, pages, count }
+        });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Failed to list bookings', error: error.message });
+    }
+};
+
+const read = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const booking = await Booking.findOne({ _id: id, removed: false }).populate('villa').populate('client');
+        if (!booking) {
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+        return res.status(200).json({ success: true, result: booking });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Failed to read booking', error: error.message });
+    }
+};
+
+const update = async (req, res) => {
+    const { id } = req.params;
+    const updates = req.body;
+    try {
+        const booking = await Booking.findOne({ _id: id, removed: false });
+        if (!booking) {
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+
+        Object.assign(booking, updates);
+
+        if (updates.status === 'cancelled') {
+            const villa = await Villa.findOne({ _id: booking.villa });
+            if (villa) {
+                villa.status = 'available';
+                await villa.save();
+            }
+        }
+
+        await booking.save();
+        return res.status(200).json({ success: true, result: booking, message: 'Booking updated successfully' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Failed to update booking', error: error.message });
+    }
+};
+
+const search = async (req, res) => {
+    // Basic search implementation required by ErpPanel
+    const { q } = req.query; // query string
+    try {
+        const regex = new RegExp(q, 'i');
+        // Search by Client name or Villa number? 
+        // Logic might need aggregation if searching related fields.
+        // For now simple search on direct fields or return generic list
+        // Assuming we might have a booking number or similar.
+        const bookings = await Booking.find({ removed: false }).limit(20).populate('client');
+        return res.status(200).json({ success: true, result: bookings });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Search failed' });
+    }
+};
+
+const filter = async (req, res) => {
+    // Basic filter implementation reusing list for now or implementing specific logic
+    return list(req, res);
+};
+
+const listAll = async (req, res) => {
+    // listAll typically returns everything without pagination, but for consistency lets return all
+    // or just large limit. 
+    try {
+        const bookings = await Booking.find({ removed: false }).sort({ created: -1 }).populate('villa').populate('client');
+        return res.status(200).json({ success: true, result: bookings, pagination: { page: 1, pages: 1, count: bookings.length } });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Failed to list all bookings', error: error.message });
+    }
+};
+
+const summary = async (req, res) => {
+    return res.status(200).json({ success: true, result: [] });
+}
+
+
+module.exports = {
+    create,
+    list,
+    read,
+    update,
+    search,
+    filter,
+    listAll,
+    summary
+};

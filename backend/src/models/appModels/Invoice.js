@@ -32,6 +32,10 @@ const invoiceSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Client',
     required: true,
+  },
+  villa: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Villa',
     autopopulate: true,
   },
   converted: {
@@ -134,6 +138,10 @@ const invoiceSchema = new mongoose.Schema({
     default: 'unpaid',
     enum: ['unpaid', 'paid', 'partially'],
   },
+  buildingStage: {
+    type: String,
+    enum: ['foundation', 'structure', 'plastering', 'finishing', 'other'],
+  },
   isOverdue: {
     type: Boolean,
     default: false,
@@ -175,5 +183,5 @@ const invoiceSchema = new mongoose.Schema({
   },
 });
 
-invoiceSchema.plugin(require('mongoose-autopopulate'));
+// invoiceSchema.plugin(require('mongoose-autopopulate'));
 module.exports = mongoose.model('Invoice', invoiceSchema);

@@ -1,10 +1,9 @@
-import React from 'react';
-import { Layout, Row, Col } from 'antd';
+import { Layout, Row, Col, theme } from 'antd';
 
-import { useSelector } from 'react-redux';
-import { Content } from 'antd/lib/layout/layout';
+const { useToken } = theme;
 
 export default function AuthLayout({ sideContent, children }) {
+  const { token } = useToken();
   return (
     <Layout>
       <Row>
@@ -24,7 +23,7 @@ export default function AuthLayout({ sideContent, children }) {
           sm={{ span: 24, order: 1 }}
           md={{ span: 13, order: 2 }}
           lg={{ span: 12, order: 2 }}
-          style={{ background: '#FFF', minHeight: '100vh' }}
+          style={{ background: token.colorBgContainer, minHeight: '100vh' }}
         >
           {children}
         </Col>

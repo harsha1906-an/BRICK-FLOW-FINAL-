@@ -74,15 +74,15 @@ const defaultInvoiceStatistics = [
 const PreviewState = ({ tag, value }) => {
   const translate = useLanguage();
   return (
-    <div style={{ color: '#595959', marginBottom: 5 }}>
-      <div className="left alignLeft capitalize">{translate(tag)}</div>
-      <div className="right alignRight">{value} %</div>
+    <div style={{ marginBottom: 5, color: 'rgba(255, 255, 255, 0.65)' }}>
+      <div className="left alignLeft capitalize" style={{ color: 'rgba(255, 255, 255, 0.45)' }}>{translate(tag)}</div>
+      <div className="right alignRight" style={{ color: '#fff' }}>{value} %</div>
       <Progress
         percent={value}
         showInfo={false}
         strokeColor={{
-          '0%': '#333',
-          '100%': '#333',
+          '0%': '#1890ff',
+          '100%': '#1890ff',
         }}
       />
     </div>
@@ -130,7 +130,6 @@ export default function PreviewCard({
       <div className="pad20">
         <h3
           style={{
-            color: '#22075e',
             fontSize: 'large',
             marginBottom: 40,
             marginTop: 0,

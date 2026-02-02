@@ -28,6 +28,9 @@ export default function RecordPayment({ config }) {
     if (currentInvoice) {
       const { credit, total, discount } = currentInvoice;
       setMaxAmount(calculate.sub(calculate.sub(total, discount), credit));
+      if (currentInvoice.buildingStage) {
+        form.setFieldValue('buildingStage', currentInvoice.buildingStage);
+      }
     }
   }, [currentInvoice]);
   useEffect(() => {

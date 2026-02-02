@@ -6,8 +6,8 @@
   top: 0;
   left: 0;
   z-index: 1000;
-  background: #fff;
-  border-right: 1px solid #edf0f5;
+  background: transparent;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo {
@@ -19,7 +19,7 @@
 }
 
 .sidebar-wraper {
-  background: #fff;
+  background: transparent;
   display: block;
 }
 
@@ -44,7 +44,16 @@
   background-color: transparent;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 992px) {
+
+  /* Hide Desktop Sidebar completely */
+  .navigation:not(.mobile-sider) {
+    display: none !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   .sidebar-wraper {
     display: none;
   }
@@ -53,13 +62,36 @@
     height: 100%;
   }
 
-  /* .ant-btn.mobile-sidebar-btn {
-    display: block;
-    position: absolute;
-    top: 21px;
-  } */
-
   .mobile-sidebar-wraper {
     display: block;
+  }
+
+  /* Glassmorphism support */
+  .mobile-sider .ant-layout-sider-children,
+  .mobile-sider .ant-menu {
+    background: transparent !important;
+  }
+
+  .mobile-sider .ant-menu-item {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  .mobile-sider .ant-menu-item-selected {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+  }
+
+  .mobile-sidebar-btn {
+    display: block !important;
+    visibility: visible !important;
+    z-index: 1000;
+  }
+
+  .ant-drawer {
+    z-index: 1001 !important;
+  }
+
+  .ant-drawer-content-wrapper {
+    width: 250px !important;
   }
 }

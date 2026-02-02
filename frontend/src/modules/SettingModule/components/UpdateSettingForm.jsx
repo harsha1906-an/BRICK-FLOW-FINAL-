@@ -28,7 +28,7 @@ export default function UpdateSettingForm({ config, children, withUpload, upload
       const settings = [];
 
       for (const [key, value] of Object.entries(fieldsValue)) {
-        settings.push({ settingKey: key, settingValue: value });
+        settings.push({ settingKey: key, settingValue: value, settingCategory: settingsCategory });
       }
 
       dispatch(settingsAction.updateMany({ entity, jsonData: { settings } }));

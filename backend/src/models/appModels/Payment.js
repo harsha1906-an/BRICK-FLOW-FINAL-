@@ -6,22 +6,29 @@ const paymentSchema = new mongoose.Schema({
     default: false,
   },
 
-  createdBy: { type: mongoose.Schema.ObjectId, ref: 'Admin', autopopulate: true, required: true },
+  createdBy: { type: mongoose.Schema.ObjectId, ref: 'Admin', required: true },
   number: {
     type: Number,
     required: true,
   },
+  transactionCode: {
+    type: String,
+    default: () => 'TRX-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+  },
   client: {
     type: mongoose.Schema.ObjectId,
     ref: 'Client',
-    autopopulate: true,
     required: true,
+  },
+  villa: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Villa',
+    autopopulate: true,
   },
   invoice: {
     type: mongoose.Schema.ObjectId,
     ref: 'Invoice',
     required: true,
-    autopopulate: true,
   },
   date: {
     type: Date,
@@ -39,9 +46,19 @@ const paymentSchema = new mongoose.Schema({
     required: true,
   },
   paymentMode: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'PaymentMode',
-    autopopulate: true,
+    type: String,
+    enum: ['Loan', 'Card', 'Cash', 'Bank Transfer'],
+    required: true,
+  },
+  ledger: {
+    type: String,
+    enum: ['official', 'internal'],
+    default: 'official',
+    required: true,
+  },
+  buildingStage: {
+    type: String,
+    enum: ['foundation', 'structure', 'plastering', 'finishing', 'other'],
   },
   ref: {
     type: String,
@@ -58,5 +75,5 @@ const paymentSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-paymentSchema.plugin(require('mongoose-autopopulate'));
+// paymentSchema.plugin(require('mongoose-autopopulate'));
 module.exports = mongoose.model('Payment', paymentSchema);

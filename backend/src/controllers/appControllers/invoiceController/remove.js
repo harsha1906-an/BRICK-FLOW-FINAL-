@@ -4,6 +4,12 @@ const Model = mongoose.model('Invoice');
 const ModelPayment = mongoose.model('Payment');
 
 const remove = async (req, res) => {
+  if (req.admin.role !== 'owner') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access Denied: Only Owners can delete invoices',
+    });
+  }
   const deletedInvoice = await Model.findOneAndUpdate(
     {
       _id: req.params.id,

@@ -56,17 +56,20 @@ export default function ReadItem({ config, selectedItem }) {
   const [client, setClient] = useState({});
 
   useEffect(() => {
-    const controller = new AbortController();
-    if (currentResult) {
+    if (selectedItem) {
+      const { invoice, _id, ...others } = selectedItem;
+      setCurrentErp({ ...others, ...invoice, _id });
+    } else if (currentResult) {
       const { invoice, _id, ...others } = currentResult;
       setCurrentErp({ ...others, ...invoice, _id });
     }
-    return () => controller.abort();
-  }, [currentResult]);
+  }, [selectedItem, currentResult]);
 
   useEffect(() => {
     if (currentErp?.client) {
       setClient(currentErp.client);
+    } else {
+      setClient({});
     }
   }, [currentErp]);
 

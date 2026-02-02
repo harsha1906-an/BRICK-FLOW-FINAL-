@@ -19,7 +19,7 @@ async function setupApp() {
 
     const demoAdmin = {
       email: 'admin@admin.com',
-      name: 'IDURAR',
+      name: 'BrickFlow',
       surname: 'Admin',
       enabled: true,
       role: 'owner',
@@ -65,6 +65,14 @@ async function setupApp() {
       },
     ]);
     console.log('👍 PaymentMode created : Done!');
+
+    const Company = require('../models/appModels/Company');
+    const defaultCompany = {
+      name: 'Main Company',
+      isActive: true,
+    };
+    await new Company(defaultCompany).save();
+    console.log('👍 Default Company created : Done!');
 
     console.log('🥳 Setup completed :Success!');
     process.exit();

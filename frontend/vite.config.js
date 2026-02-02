@@ -2,6 +2,7 @@ import path from 'path';
 
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -12,7 +13,37 @@ export default ({ mode }) => {
       : 'http://localhost:8888/';
 
   const config = {
-    plugins: [react()],
+    plugins: [
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+        manifest: {
+          name: 'BrickFlow Construction ERP',
+          short_name: 'BrickFlow',
+          description: 'Modern ERP for Construction Management',
+          theme_color: '#ffffff',
+          icons: [
+            {
+              src: 'pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'any maskable',
+            },
+          ],
+        },
+      }),
+    ],
     resolve: {
       base: '/',
       alias: {
@@ -23,6 +54,16 @@ export default ({ mode }) => {
       port: 3000,
       proxy: {
         '/api': {
+          target: proxy_url,
+          changeOrigin: true,
+          secure: false,
+        },
+        '/public': {
+          target: proxy_url,
+          changeOrigin: true,
+          secure: false,
+        },
+        '/download': {
           target: proxy_url,
           changeOrigin: true,
           secure: false,

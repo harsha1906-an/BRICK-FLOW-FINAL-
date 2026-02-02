@@ -2,6 +2,45 @@
   max-width: 1150px;
 }
 
+@media (max-width: 992px) {
+  .ant-layout {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .ant-layout-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .ant-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Responsive Content Container */
+.erp-content {
+  margin: 40px auto 30px !important;
+  overflow: initial;
+  width: 100%;
+  padding: 0 50px;
+  /* Desktop Padding */
+  max-width: 1400px;
+}
+
+@media (max-width: 992px) {
+  .erp-content {
+    padding: 0 8px !important;
+    /* Mobile Padding - reduced for better space utilization */
+    max-width: none !important;
+    margin: 0 !important;
+    margin-top: 65px !important;
+  }
+}
+
 .appContainer {
   max-width: 1050px;
 }

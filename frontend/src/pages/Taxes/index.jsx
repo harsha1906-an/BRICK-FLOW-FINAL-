@@ -11,6 +11,7 @@ export default function Taxes() {
   const translate = useLanguage();
   const entity = 'taxes';
   const searchConfig = {
+    entity: 'taxes',
     displayLabels: ['name'],
     searchFields: 'name',
     outputValue: '_id',

@@ -6,14 +6,14 @@ import { Provider } from 'react-redux';
 import store from '@/redux/store';
 import PageLoader from '@/components/PageLoader';
 
-const IdurarOs = lazy(() => import('./apps/IdurarOs'));
+const BrickFlowOs = lazy(() => import('./apps/BrickFlowOs'));
 
 export default function RoutApp() {
   return (
     <BrowserRouter>
       <Provider store={store}>
         <Suspense fallback={<PageLoader />}>
-          <IdurarOs />
+          <BrickFlowOs />
         </Suspense>
       </Provider>
     </BrowserRouter>

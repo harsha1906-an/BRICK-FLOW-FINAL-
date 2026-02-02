@@ -7,23 +7,23 @@ const About = () => {
   return (
     <Result
       status="info"
-      title={'IDURAR'}
+      title={'Brick Flow'}
       subTitle={translate('Do you need help on customize of this app')}
       extra={
         <>
           <p>
-            Website : <a href="https://www.idurarapp.com">www.idurarapp.com</a>{' '}
+            Website : <a href="https://www.brickflow.com">www.brickflow.com</a>{' '}
           </p>
           <p>
             GitHub :{' '}
-            <a href="https://github.com/idurar/idurar-erp-crm">
-              https://github.com/idurar/idurar-erp-crm
+            <a href="https://github.com/brickflow/brick-flow">
+              https://github.com/brickflow/brick-flow
             </a>
           </p>
           <Button
             type="primary"
             onClick={() => {
-              window.open(`https://www.idurarapp.com/contact-us/`);
+              window.open(`https://www.brickflow.com/contact-us/`);
             }}
           >
             {translate('Contact us')}
