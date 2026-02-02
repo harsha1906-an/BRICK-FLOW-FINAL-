@@ -17,6 +17,16 @@ const schema = new mongoose.Schema({
         ref: 'Project',
         autopopulate: true,
     },
+    villa: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Villa',
+        autopopulate: true,
+    },
+    supplier: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Supplier',
+        autopopulate: true,
+    },
     usageCategory: {
         type: String,
         enum: ['daily_work', 'waste', 'transfer', 'adjustment', 'other'],

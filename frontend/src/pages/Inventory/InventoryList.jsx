@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Table, Tag, Button, Space, Input, Select, Modal, InputNumber, Form, DatePicker, Tooltip } from 'antd';
 import { PlusOutlined, SearchOutlined, HistoryOutlined, ArrowUpOutlined, ArrowDownOutlined, WarningOutlined } from '@ant-design/icons';
 import { request } from '@/request';
+import { API_BASE_URL } from '@/config/serverApiConfig';
 import { message } from '@/utils/antdGlobal';
 import { useUserRole } from '@/hooks/useUserRole';
 import MaterialForm from '@/forms/MaterialForm';
@@ -22,17 +23,56 @@ export default function InventoryList() {
     const { role } = useUserRole();
     const canEdit = role === 'OWNER' || role === 'ENGINEER'; // Engineers need to issue stock
 
+    const [villas, setVillas] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
+    const [villaFilter, setVillaFilter] = useState('all');
+
+    useEffect(() => {
+        fetchProjects();
+        fetchVillas();
+        fetchSuppliers();
+    }, []);
+
     useEffect(() => {
         fetchData();
-        fetchProjects();
-    }, []);
+    }, [villaFilter]);
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const data = await request.listAll({ entity: 'material' });
-            if (data.success) setData(data.result);
-        } catch (e) { message.error('Failed to load inventory'); }
+            // Always fetch materials to get names/categories
+            const materialsData = await request.listAll({ entity: 'material' });
+            let materials = materialsData.success ? materialsData.result : [];
+
+            // If a specific villa is selected, fetch villa-specific stock
+            if (villaFilter !== 'all') {
+                const stockData = await request.filter({
+                    entity: 'villastock',
+                    options: {
+                        filter: 'villa',
+                        equal: villaFilter,
+                    }
+                });
+
+                if (stockData.success) {
+                    const stockMap = {}; // materialId -> currentStock
+                    stockData.result.forEach(stock => {
+                        stockMap[stock.material?._id || stock.material] = stock.currentStock;
+                    });
+
+                    // Update materials with villa stock
+                    materials = materials.map(m => ({
+                        ...m,
+                        currentStock: stockMap[m._id] || 0, // Default to 0 if no stock at villa
+                        isGlobal: false
+                    }));
+                }
+            } else {
+                materials = materials.map(m => ({ ...m, isGlobal: true }));
+            }
+
+            setData(materials);
+        } catch (e) { message.error('Failed to load inventory'); console.error(e); }
         setLoading(false);
     };
 
@@ -42,6 +82,20 @@ export default function InventoryList() {
             if (data.success) setProjects(data.result);
         } catch (e) { console.error('Failed to load projects'); }
     };
+
+    const fetchVillas = async () => {
+        try {
+            const data = await request.listAll({ entity: 'villa' });
+            if (data.success) setVillas(data.result);
+        } catch (e) { console.error('Failed to load villas'); }
+    };
+
+    const fetchSuppliers = async () => {
+        try {
+            const data = await request.listAll({ entity: 'supplier' });
+            if (data.success) setSuppliers(data.result); // Ensure result is array
+        } catch (e) { console.error('Failed to load suppliers'); }
+    }
 
     const filteredData = data.filter(item => {
         const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
@@ -58,7 +112,7 @@ export default function InventoryList() {
             render: c => <Tag>{c}</Tag>
         },
         {
-            title: 'Current Stock',
+            title: villaFilter === 'all' ? 'Current Stock (Global)' : 'Current Stock (Villa)',
             key: 'currentStock',
             render: (_, r) => {
                 const isLow = r.reorderLevel > 0 && r.currentStock <= r.reorderLevel;
@@ -107,13 +161,32 @@ export default function InventoryList() {
         } catch (e) { message.error('Failed to view history'); }
     };
 
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
+    // ... existing states ...
+
     return (
-        <Card title="Inventory Management" extra={canEdit && <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsMaterialModalOpen(true)}>Add Material</Button>}>
+        <Card title="Inventory Management" extra={
+            <Space>
+                <Button icon={<ArrowDownOutlined />} onClick={() => setIsReportModalOpen(true)}>Download Report</Button>
+                {canEdit && <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsMaterialModalOpen(true)}>Add Material</Button>}
+            </Space>
+        }>
             <div style={{ marginBottom: 16, display: 'flex', gap: 16 }}>
                 <Input placeholder="Search materials..." prefix={<SearchOutlined />} style={{ width: 200 }} onChange={e => setSearchText(e.target.value)} />
                 <Select defaultValue="all" style={{ width: 150 }} onChange={setCategoryFilter}>
                     <Select.Option value="all">All Categories</Select.Option>
                     {categories.map(c => <Select.Option key={c} value={c}>{c}</Select.Option>)}
+                </Select>
+                <Select
+                    placeholder="Filter by Villa"
+                    style={{ width: 200 }}
+                    onChange={setVillaFilter}
+                    allowClear
+                    value={villaFilter}
+                >
+                    <Select.Option value="all">All Villas (Global Stock)</Select.Option>
+                    {villas.map(v => <Select.Option key={v._id} value={v._id}>Villa {v.villaNumber}</Select.Option>)}
                 </Select>
             </div>
 
@@ -139,6 +212,9 @@ export default function InventoryList() {
                 <StockAdjustmentModal
                     data={stockModal}
                     projects={projects}
+                    villas={villas}
+                    suppliers={suppliers}
+                    villaFilter={villaFilter}
                     onCancel={() => setStockModal({ ...stockModal, open: false })}
                     onSuccess={() => { setStockModal({ ...stockModal, open: false }); fetchData(); }}
                 />
@@ -154,13 +230,20 @@ export default function InventoryList() {
                         { title: 'Date', dataIndex: 'date', render: d => dayjs(d).format('DD MMM YYYY') },
                         { title: 'Type', dataIndex: 'type', render: t => t === 'inward' ? <Tag color="green">IN</Tag> : <Tag color="red">OUT</Tag> },
                         { title: 'Qty', dataIndex: 'quantity', render: q => <b>{q}</b> },
+                        { title: 'Villa', dataIndex: 'villa', render: v => v ? <Tag color="blue">Villa {v.villaNumber}</Tag> : '-' },
                         { title: 'Project', dataIndex: 'project', render: p => p?.name || '-' },
                         { title: 'Usage', dataIndex: 'usageCategory', render: u => <Tag size="small">{u?.replace('_', ' ')}</Tag> },
                         { title: 'Ref/Notes', key: 'notes', render: (_, r) => <Tooltip title={r.notes}>{r.reference || '-'}</Tooltip> }
                     ]}
                 />
             </Modal>
-        </Card>
+
+            <ReportModal
+                open={isReportModalOpen}
+                onCancel={() => setIsReportModalOpen(false)}
+                villas={villas}
+            />
+        </Card >
     );
 }
 
@@ -182,12 +265,20 @@ function CreateMaterialModal({ open, onCancel, onSuccess }) {
     );
 }
 
-function StockAdjustmentModal({ data, projects, onCancel, onSuccess }) {
+function StockAdjustmentModal({ data, projects, villas, suppliers, onCancel, onSuccess, villaFilter }) {
     const [form] = Form.useForm();
     const { type, material, open } = data;
     const isInward = type === 'inward';
+    const selectedVilla = villas.find(v => v._id === villaFilter);
 
-    useEffect(() => { form.resetFields(); }, [open]);
+    useEffect(() => {
+        if (open) {
+            form.resetFields();
+            if (selectedVilla) {
+                form.setFieldsValue({ villa: selectedVilla._id });
+            }
+        }
+    }, [open, selectedVilla]);
 
     const handleSubmit = async () => {
         try {
@@ -226,6 +317,29 @@ function StockAdjustmentModal({ data, projects, onCancel, onSuccess }) {
                         <InputNumber style={{ width: '100%' }} min={0.01} />
                     </Form.Item>
 
+                    {/* Villa Selection - Hide if already filtered */}
+                    {selectedVilla ? (
+                        <div style={{ marginBottom: 24 }}>
+                            <span style={{ color: 'gray' }}>Assigning to: </span>
+                            <Tag color="blue">Villa {selectedVilla.villaNumber}</Tag>
+                            <Form.Item name="villa" hidden initialValue={selectedVilla._id}><Input /></Form.Item>
+                        </div>
+                    ) : (
+                        <Form.Item name="villa" label="Select Villa (Optional)">
+                            <Select placeholder="Assign to Villa" allowClear>
+                                {villas?.map(v => <Select.Option key={v._id} value={v._id}>Villa {v.villaNumber}</Select.Option>)}
+                            </Select>
+                        </Form.Item>
+                    )}
+
+                    {isInward && (
+                        <Form.Item name="supplier" label="Supplier (Optional)">
+                            <Select placeholder="Select Supplier" allowClear showSearch optionFilterProp="children">
+                                {suppliers?.map(s => <Select.Option key={s._id} value={s._id}>{s.name}</Select.Option>)}
+                            </Select>
+                        </Form.Item>
+                    )}
+
                     {!isInward && (
                         <>
                             <Form.Item name="project" label="For Project (Site)" rules={[{ required: true }]}>
@@ -252,6 +366,74 @@ function StockAdjustmentModal({ data, projects, onCancel, onSuccess }) {
                     </Form.Item>
                 </Form>
             )}
+        </Modal>
+    );
+}
+
+function ReportModal({ open, onCancel, villas }) {
+    const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
+
+    const handleDownload = async () => {
+        try {
+            setLoading(true);
+            const values = await form.validateFields();
+            const { dateRange, villa } = values;
+            const [start, end] = dateRange;
+
+            const response = await request.download({
+                entity: 'material',
+                options: {
+                    startDate: start.format('YYYY-MM-DD'),
+                    endDate: end.format('YYYY-MM-DD'),
+                    villa: villa || 'all'
+                }
+            });
+
+            if (response.success === false) {
+                message.error(response.message || 'Failed to download');
+            } else {
+                const blob = new Blob([response.data], { type: 'application/pdf' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `InventoryReport_${Date.now()}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
+                onCancel();
+            }
+        } catch (e) {
+            console.error(e);
+            message.error('Failed to initiate download');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Modal
+            title="Download Inventory Report"
+            open={open}
+            onCancel={onCancel}
+            onOk={handleDownload}
+            okText="Download PDF"
+            confirmLoading={loading}
+            destroyOnClose={true}
+            maskClosable={false}
+        >
+            <Form form={form} layout="vertical">
+                <Form.Item name="dateRange" label="Date Range" rules={[{ required: true }]}>
+                    <DatePicker.RangePicker style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="villa" label="Filter by Villa (Optional)">
+                    <Select placeholder="All Villas" allowClear>
+                        <Select.Option value="all">All Villas</Select.Option>
+                        {villas?.map(v => <Select.Option key={v._id} value={v._id}>Villa {v.villaNumber}</Select.Option>)}
+                    </Select>
+                </Form.Item>
+            </Form>
         </Modal>
     );
 }

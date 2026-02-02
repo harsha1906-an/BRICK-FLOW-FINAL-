@@ -198,3 +198,91 @@ Found: 2
 Found: 2
 [2026-02-02T09:20:34.531Z] List Query: {"removed":false}
 Found: 2
+[2026-02-02T11:02:04.447Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T11:03:33.424Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T11:06:07.264Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T11:06:24.412Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T11:31:56.925Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:21:30.321Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:30:59.488Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:30:59.680Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:31:40.302Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:31:40.486Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:32:11.941Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:32:12.060Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:32:53.707Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T12:32:53.862Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T16:31:43.800Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T16:48:07.705Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T16:48:43.075Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T16:50:52.277Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T16:50:55.784Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T17:38:40.733Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:15:24.315Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:15:24.654Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:16:35.124Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:16:35.437Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:16:51.593Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:16:51.959Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:17:00.733Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:17:01.184Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:27:21.182Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:27:21.587Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:27:24.537Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:27:24.912Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:29:35.219Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:29:35.615Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:29:44.278Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:29:44.670Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:35:37.462Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:48:08.299Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:48:08.348Z] List Query: {"removed":false}
+Found: 2
+[2026-02-02T18:48:12.149Z] List Query: {"removed":false}
+Found: 1
+[2026-02-02T18:48:15.065Z] List Query: {"removed":false}
+Found: 1
+[2026-02-02T18:48:29.783Z] List Query: {"removed":false}
+Found: 1
+[2026-02-02T18:48:39.855Z] List Query: {"removed":false}
+Found: 0
+[2026-02-02T18:51:53.940Z] List Query: {"removed":false}
+Found: 0

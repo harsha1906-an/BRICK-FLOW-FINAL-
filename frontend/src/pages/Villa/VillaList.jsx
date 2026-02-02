@@ -1,11 +1,12 @@
 import useLanguage from '@/locale/useLanguage';
-import SelectAsync from '@/components/SelectAsync';
 import { Tag } from 'antd';
 import { ErpLayout } from '@/layout';
 import ErpPanel from '@/modules/ErpPanelModule';
+import { useMoney } from '@/settings';
 
 export default function VillaList() {
     const translate = useLanguage();
+    const { moneyFormatter } = useMoney();
 
     const searchConfig = {
         entity: 'villa',
@@ -40,7 +41,7 @@ export default function VillaList() {
         {
             title: translate('Price'),
             dataIndex: 'price',
-            render: (price) => price ? `$ ${price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '-',
+            render: (price) => moneyFormatter({ amount: price }),
         },
     ];
 

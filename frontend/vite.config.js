@@ -19,8 +19,8 @@ export default ({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
-          name: 'BrickFlow Construction ERP',
-          short_name: 'BrickFlow',
+          name: 'Brick Flow',
+          short_name: 'Brick Flow',
           description: 'Modern ERP for Construction Management',
           theme_color: '#ffffff',
           icons: [
@@ -42,6 +42,9 @@ export default ({ mode }) => {
             },
           ],
         },
+        devOptions: {
+          enabled: true
+        }
       }),
     ],
     resolve: {

@@ -36,6 +36,7 @@ const routerApp = (entity, controller) => {
   if (entity === 'material') {
     router.route(`/${entity}/adjust/:id`).post(catchErrors(controller['adjustStock']));
     router.route(`/${entity}/history/:id`).get(catchErrors(controller['history']));
+    router.route(`/${entity}/downloadReport`).get(catchErrors(controller['downloadReport']));
   }
 
   if (entity === 'purchaseorder') {

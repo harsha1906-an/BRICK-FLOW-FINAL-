@@ -157,13 +157,14 @@ function LoadInvoiceForm({ subTotal = 0, current = null }) {
               padding: '10px',
               background: '#f6ffed',
               border: '1px solid #b7eb8f',
-              borderRadius: '4px'
+              borderRadius: '4px',
+              color: '#000' // Ensure text is visible on light background
             }}>
               <h4 style={{ margin: '0 0 5px 0', color: '#135200' }}>Property Financial Summary</h4>
               <div style={{ display: 'flex', gap: '15px', fontSize: '13px' }}>
-                <div><strong>Total Booked:</strong> {clientStats?.totalAgreement?.toLocaleString()}</div>
-                <div><strong>Total Paid:</strong> {clientStats?.totalPaid?.toLocaleString()}</div>
-                <div><strong>Balance:</strong> <span style={{ color: clientStats?.balance > 0 ? 'red' : 'green' }}>{clientStats?.balance?.toLocaleString()}</span></div>
+                <div><strong style={{ color: '#000' }}>Total Booked:</strong> <span style={{ color: '#000' }}>{clientStats?.totalAgreement?.toLocaleString()}</span></div>
+                <div><strong style={{ color: '#000' }}>Total Paid:</strong> <span style={{ color: '#000' }}>{clientStats?.totalPaid?.toLocaleString()}</span></div>
+                <div><strong style={{ color: '#000' }}>Balance:</strong> <span style={{ color: clientStats?.balance > 0 ? 'red' : 'green', fontWeight: 'bold' }}>{clientStats?.balance?.toLocaleString()}</span></div>
               </div>
             </div>
           )}

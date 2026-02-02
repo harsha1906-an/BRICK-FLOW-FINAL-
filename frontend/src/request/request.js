@@ -285,5 +285,22 @@ const request = {
       return errorHandler(error);
     }
   },
+
+  download: async ({ entity, options = {} }) => {
+    try {
+      let query = '?';
+      for (var key in options) {
+        query += key + '=' + options[key] + '&';
+      }
+      query = query.slice(0, -1);
+
+      const response = await axiosInstance.get(entity + '/downloadReport' + query, {
+        responseType: 'blob',
+      });
+      return response;
+    } catch (error) {
+      return errorHandler(error);
+    }
+  },
 };
 export default request;

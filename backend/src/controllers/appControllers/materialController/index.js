@@ -5,7 +5,7 @@ const methods = createCRUDController('Material');
 methods.adjustStock = async (req, res) => {
     try {
         const { id } = req.params;
-        const { type, quantity, reference, notes, date, project, usageCategory } = req.body; // type: 'inward' or 'outward'
+        const { type, quantity, reference, notes, date, project, usageCategory, villa, supplier } = req.body; // type: 'inward' or 'outward', villa: villaId
 
         if (!['inward', 'outward'].includes(type)) {
             return res.status(400).json({ success: false, message: 'Invalid transaction type' });
@@ -16,25 +16,75 @@ methods.adjustStock = async (req, res) => {
 
         const Material = mongoose.model('Material');
         const InventoryTransaction = mongoose.model('InventoryTransaction');
+        const VillaStock = mongoose.model('VillaStock');
 
         const material = await Material.findOne({ _id: id, removed: false });
         if (!material) {
             return res.status(404).json({ success: false, message: 'Material not found' });
         }
 
+        let villaStock = null;
+        if (villa) {
+            villaStock = await VillaStock.findOne({ villa, material: id });
+            if (!villaStock) {
+                // Create if not exists (only strict checking for outward if needed, but here we can allow negative or require initial inward)
+                // For now, create new with 0 if not exists
+                villaStock = new VillaStock({ villa, material: id, currentStock: 0 });
+            }
+        }
+
         // Check stock for outward
+        // Global Stock check
         if (type === 'outward' && material.currentStock < quantity) {
             return res.status(400).json({
                 success: false,
-                message: `Insufficient stock. Current: ${material.currentStock} ${material.unit}`
+                message: `Insufficient global stock. Current: ${material.currentStock} ${material.unit}`
             });
         }
 
+        // Villa Stock check (optional: enforce villa level stock?)
+        // Let's enforce it to prevent negative villa stock
+        if (type === 'outward' && villa && villaStock) {
+            if (villaStock.currentStock < quantity) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Insufficient stock at Villa. Current: ${villaStock.currentStock} ${material.unit}`
+                });
+            }
+        }
+
+
         // Update Material Stock
         if (type === 'inward') {
-            material.currentStock += parseFloat(quantity);
+            if (villaStock) {
+                // TRANSFER: Global -> Villa
+                // Check if Global has enough stock
+                if (material.currentStock < quantity) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Insufficient global stock for transfer. Current: ${material.currentStock} ${material.unit}`
+                    });
+                }
+                material.currentStock -= parseFloat(quantity); // Reduce Global
+                villaStock.currentStock += parseFloat(quantity); // Increase Villa
+                villaStock.lastUpdated = Date.now();
+                await villaStock.save();
+            } else {
+                // PURCHASE: External -> Global
+                material.currentStock += parseFloat(quantity);
+            }
         } else {
-            material.currentStock -= parseFloat(quantity);
+            // OUTWARD (Consumption)
+            if (villaStock) {
+                // Consume from Villa
+                villaStock.currentStock -= parseFloat(quantity);
+                villaStock.lastUpdated = Date.now();
+                await villaStock.save();
+                // Do NOT reduce Global (Material.currentStock) because it was already reduced during Transfer
+            } else {
+                // Consume from Global directly
+                material.currentStock -= parseFloat(quantity);
+            }
         }
         await material.save();
 
@@ -47,6 +97,8 @@ methods.adjustStock = async (req, res) => {
             reference,
             notes,
             project,
+            villa,
+            supplier,
             usageCategory: usageCategory || 'daily_work',
             performedBy: req.admin._id,
         }).save();
@@ -82,5 +134,71 @@ methods.history = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 }
+
+methods.downloadReport = async (req, res) => {
+    try {
+        console.log("Download Report Request Received", req.query);
+        const { startDate, endDate, villa } = req.query;
+        const InventoryTransaction = mongoose.model('InventoryTransaction');
+        const Villa = mongoose.model('Villa');
+        const pdfController = require('@/controllers/pdfController');
+
+        console.log("Download Param - Start:", startDate, "End:", endDate, "Villa:", villa);
+
+        const query = {
+            removed: { $ne: true },
+            date: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
+            }
+        };
+
+        if (villa && villa !== 'all') {
+            query.villa = villa;
+        }
+
+        console.log("Fetching transactions with query:", query);
+        const transactions = await InventoryTransaction.find(query)
+            .populate('material')
+            .populate('villa')
+            .sort({ date: 1 });
+
+        console.log("Found transactions:", transactions.length);
+
+        const villaObj = (villa && villa !== 'all') ? await Villa.findById(villa) : null;
+
+        const model = {
+            startDate,
+            endDate,
+            villa: villaObj,
+            items: transactions
+        };
+
+        const filename = `InventoryReport_${Date.now()}.pdf`;
+        const targetLocation = `src/public/download/${filename}`;
+
+        console.log("Generating PDF at:", targetLocation);
+        await pdfController.generatePdf(
+            'InventoryReport',
+            { filename, format: 'A4', targetLocation },
+            model,
+            () => {
+                console.log("PDF Generated successfully. Sending file...");
+                return res.download(targetLocation, (error) => {
+                    if (error) {
+                        console.error("Error sending file:", error);
+                        res.status(500).json({ success: false, message: "Error downloading file" });
+                    } else {
+                        console.log("File sent successfully.");
+                    }
+                });
+            }
+        );
+
+    } catch (error) {
+        console.error("Download Report Error:", error);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
 
 module.exports = methods;

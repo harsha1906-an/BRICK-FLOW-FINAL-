@@ -25,10 +25,14 @@ const paymentSchema = new mongoose.Schema({
     ref: 'Villa',
     autopopulate: true,
   },
+  booking: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Booking',
+  },
   invoice: {
     type: mongoose.Schema.ObjectId,
     ref: 'Invoice',
-    required: true,
+    // required: true, // Made optional for Booking payments
   },
   date: {
     type: Date,
@@ -58,7 +62,6 @@ const paymentSchema = new mongoose.Schema({
   },
   buildingStage: {
     type: String,
-    enum: ['foundation', 'structure', 'plastering', 'finishing', 'other'],
   },
   ref: {
     type: String,

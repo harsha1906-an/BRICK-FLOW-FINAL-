@@ -54,7 +54,7 @@ app.use('/api', adminAuth.isValidAuthToken, labourApiRouter);
 app.use('/api', adminAuth.isValidAuthToken, attendanceApiRouter);
 app.use('/api', adminAuth.isValidAuthToken, reportingApiRouter);
 app.use('/api', adminAuth.isValidAuthToken, bookingApiRouter);
-app.use('/api', adminAuth.isValidAuthToken, chatApiRouter);
+app.use('/api/chat', adminAuth.isValidAuthToken, chatApiRouter);
 app.use('/download', coreDownloadRouter);
 app.use('/public', corePublicRouter);
 

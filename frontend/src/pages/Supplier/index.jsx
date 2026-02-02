@@ -79,6 +79,7 @@ export default function SupplierList() {
         dataTableColumns,
         searchConfig,
         entityDisplayLabels,
+        deleteModalLabels: ['name'],
     };
 
     return <SupplierDataTableModule config={config} />;

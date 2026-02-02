@@ -1,5 +1,6 @@
 const custom = require('@/controllers/pdfController');
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 module.exports = downloadPdf = async (req, res, { directory, id }) => {
   try {
@@ -8,7 +9,9 @@ module.exports = downloadPdf = async (req, res, { directory, id }) => {
       const Model = mongoose.model(modelName);
       const result = await Model.findOne({
         _id: id,
-      }).exec();
+      })
+        .populate('client villa')
+        .exec();
 
       // Throw error if no result
       if (!result) {
@@ -20,12 +23,19 @@ module.exports = downloadPdf = async (req, res, { directory, id }) => {
       const fileId = modelName.toLowerCase() + '-' + result._id + '.pdf';
       const folderPath = modelName.toLowerCase();
       const targetLocation = `src/public/download/${folderPath}/${fileId}`;
+
+      // Custom filename for the user
+      const dateStr = result.date ? moment(result.date).format('DD-MM-YYYY') : moment().format('DD-MM-YYYY');
+      const clientName = result.client?.name ? result.client.name.replace(/[^a-z0-9]/gi, '_') : 'Client';
+      const invoiceNum = result.number ? `${result.number}-${result.year || ''}` : id;
+      const downloadName = `${modelName}_${clientName}_${invoiceNum}_${dateStr}.pdf`;
+
       await custom.generatePdf(
         modelName,
         { filename: folderPath, format: 'A4', targetLocation },
         result,
         async () => {
-          return res.download(targetLocation, (error) => {
+          return res.download(targetLocation, downloadName, (error) => {
             if (error)
               return res.status(500).json({
                 success: false,

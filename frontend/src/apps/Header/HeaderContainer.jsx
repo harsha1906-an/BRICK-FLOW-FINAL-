@@ -14,6 +14,8 @@ import useLanguage from '@/locale/useLanguage';
 import logo from '@/style/images/logo.png';
 import useResponsive from '@/hooks/useResponsive';
 
+import InstallApp from '@/components/InstallApp';
+
 export default function HeaderContent() {
   const currentAdmin = useSelector(selectCurrentAdmin);
   const { Header } = Layout;
@@ -97,6 +99,10 @@ export default function HeaderContent() {
         position: 'relative',
       }}
     >
+      <div style={{ position: 'absolute', right: '60px' }}>
+        <InstallApp />
+      </div>
+
       {isMobile && (
         <div className="mobile-header-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer', position: 'absolute', top: '75%', left: '50%', transform: 'translate(-50%, -50%)' }}>
           <img src={logo} alt="Logo" style={{ height: '90px' }} />

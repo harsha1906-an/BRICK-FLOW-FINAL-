@@ -1,0 +1,67 @@
+doctype html
+html
+  head
+    link(rel="shortcut icon" type="image/png" href="/images/icons/favicon.png")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    style.
+      .sheet { margin: 0; width: 100%; height: 297mm; }
+      body { width: 100%; margin: 0; padding: 0px; background: #ffffff; font-family: sans-serif; font-size:12px; color:#222; }
+      *, *:before, *:after { box-sizing: inherit; color:#222; }
+      .clearfix { display: block; }
+      .left { float:left; }
+      .right { float:right; }
+      .top-area { display: block; width:100%; }
+      .logo { width: 150px; }
+      .company-info { text-align: right; font-size:12px; }
+      h1.report-title { font-size:24px; color:#52008c; margin-top:0; }
+      .table-report { width: 100%; border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; }
+      .table-report tr:nth-child(2n-1) td { background: #fcfeff; }
+      .table-report th { padding: 8px 10px; border-bottom: 1px solid #c2e0f2; color:#52008c; font-weight: 700; font-size: 12px; text-align: left; }
+      .table-report td { padding: 10px; text-align: left; font-size: 11px; }
+      .footer-report { margin-top:30px; color: #5d6975; width: 100%; position: absolute; bottom: 0; padding: 20px 0; text-align: center; }
+
+  body
+    header.clearfix
+      .top-area
+        img.logo.left(src=settings.public_server_file+settings.company_logo)
+        .right.company-info
+          p.strong #{settings.company_name}
+          p #{settings.company_address}
+          p #{settings.company_reg_number}
+      
+      .clearfix(style="margin-top: 20px; margin-bottom: 20px;")
+        h1.report-title Inventory Report
+        p
+          strong Date Range: 
+          | #{moment(model.startDate).format(dateFormat)} - #{moment(model.endDate).format(dateFormat)}
+        if model.villa
+          p
+            strong Villa: 
+            | #{model.villa.villaNumber}
+        else
+            p
+            strong Villa: 
+            | All Villas
+
+    main
+      table.table-report
+        thead
+          tr
+            th Date
+            th Material
+            th Type
+            th Villa
+            th Quantity
+            th Ref/Notes
+        tbody
+          each item in model.items
+            tr
+              td #{moment(item.date).format(dateFormat)}
+              td #{item.material ? item.material.name : '-'}
+              td #{item.type == 'inward' ? 'IN' : 'OUT'}
+              td #{item.villa ? 'Villa ' + item.villa.villaNumber : 'Global'}
+              td #{item.quantity} #{item.material ? item.material.unit : ''}
+              td #{item.reference}
+
+    footer.footer-report
+      | Report generated on #{moment().format(dateFormat)}
