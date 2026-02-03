@@ -1,4 +1,4 @@
-.ant-layout {
+.dark-theme .ant-layout {
   background-color: #0c0d0e !important;
 }
 
@@ -6,7 +6,7 @@
   background-color: transparent !important;
 }
 
-.ant-layout-sider {
+.dark-theme .ant-layout-sider {
   background-color: #0c0d0e !important;
 }
 
@@ -14,12 +14,20 @@
   background: #141414;
 }
 
-.ant-layout,
-.ant-layout-content,
-.ant-layout-header,
-.ant-layout-sider,
-.ant-layout-footer {
+.dark-theme .ant-layout,
+.dark-theme .ant-layout-content,
+.dark-theme .ant-layout-header,
+.dark-theme .ant-layout-sider,
+.dark-theme .ant-layout-footer {
   color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.light-theme .ant-layout,
+.light-theme .ant-layout-content,
+.light-theme .ant-layout-header,
+.light-theme .ant-layout-sider,
+.light-theme .ant-layout-footer {
+  color: rgba(0, 0, 0, 0.85) !important;
 }
 
 .ant-statistic-title,
@@ -28,6 +36,10 @@
 }
 
 .ant-progress-inner {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark-theme .ant-progress-inner {
   background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
@@ -79,7 +91,24 @@ h4,
 h5,
 h6 {
   font-weight: 700 !important;
+}
+
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4,
+.dark-theme h5,
+.dark-theme h6 {
   color: #fff !important;
+}
+
+.light-theme h1,
+.light-theme h2,
+.light-theme h3,
+.light-theme h4,
+.light-theme h5,
+.light-theme h6 {
+  color: rgba(0, 0, 0, 0.85) !important;
 }
 
 .ant-menu-inline {

@@ -7,6 +7,10 @@
   left: 0;
   z-index: 1000;
   background: transparent;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .navigation {
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -73,10 +77,19 @@
   }
 
   .mobile-sider .ant-menu-item {
+    color: rgba(0, 0, 0, 0.65) !important;
+  }
+
+  .dark-theme .mobile-sider .ant-menu-item {
     color: rgba(255, 255, 255, 0.85) !important;
   }
 
   .mobile-sider .ant-menu-item-selected {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #339393 !important;
+  }
+
+  .dark-theme .mobile-sider .ant-menu-item-selected {
     background: rgba(255, 255, 255, 0.2) !important;
     color: #fff !important;
   }

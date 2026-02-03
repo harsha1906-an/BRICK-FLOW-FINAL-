@@ -1,6 +1,7 @@
 import { Statistic, Progress, Divider, Row, Spin } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import useLanguage from '@/locale/useLanguage';
+import { useThemeContext } from '@/context/ThemeContext';
 
 export default function CustomerPreviewCard({
   isLoading = false,
@@ -8,6 +9,7 @@ export default function CustomerPreviewCard({
   newCustomer = 0,
 }) {
   const translate = useLanguage();
+  const { isDarkMode } = useThemeContext();
   return (
     <Row className="gutter-row">
       <div className="whiteBox shadow" style={{ height: 458 }}>
@@ -32,7 +34,13 @@ export default function CustomerPreviewCard({
               }}
             >
               <Progress type="dashboard" percent={newCustomer} size={148} />
-              <p style={{ color: 'rgba(255, 255, 255, 0.45)' }}>{translate('New Customer this Month')}</p>
+              <p
+                style={{
+                  color: isDarkMode ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.45)'
+                }}
+              >
+                {translate('New Customer this Month')}
+              </p>
               <Divider />
               <Statistic
                 title={translate('Active Customer')}

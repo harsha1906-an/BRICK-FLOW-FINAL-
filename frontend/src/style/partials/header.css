@@ -16,7 +16,11 @@
   position: sticky;
   top: 0;
   z-index: 999;
-  background: #141414 !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .ant-layout-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -39,10 +43,15 @@
   background: transparent;
 }
 
-.headerIcon.ant-avatar :hover {
+.headerIcon.ant-avatar:hover {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 0px 10px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.dark-theme .headerIcon.ant-avatar:hover {
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0px 0px 10px 4px rgba(255, 255, 255, 0.1);
-  cursor: pointer;
 }
 
 .headerIcon .last {
@@ -66,12 +75,20 @@
 
 .mobile-sidebar-btn {
   display: none;
-  color: #fff !important;
+  color: rgba(0, 0, 0, 0.85) !important;
   border: none !important;
   background: transparent !important;
 }
 
+.dark-theme .mobile-sidebar-btn {
+  color: #fff !important;
+}
+
 .mobile-sidebar-btn:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark-theme .mobile-sidebar-btn:hover {
   background: rgba(255, 255, 255, 0.1) !important;
 }
 

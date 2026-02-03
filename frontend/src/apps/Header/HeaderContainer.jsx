@@ -15,6 +15,7 @@ import logo from '@/style/images/logo.png';
 import useResponsive from '@/hooks/useResponsive';
 
 import InstallApp from '@/components/InstallApp';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function HeaderContent() {
   const currentAdmin = useSelector(selectCurrentAdmin);
@@ -99,6 +100,9 @@ export default function HeaderContent() {
         position: 'relative',
       }}
     >
+      <div style={{ position: 'absolute', right: '110px' }}>
+        <ThemeToggle />
+      </div>
       <div style={{ position: 'absolute', right: '60px' }}>
         <InstallApp />
       </div>

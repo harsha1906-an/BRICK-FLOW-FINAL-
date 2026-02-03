@@ -21,7 +21,7 @@
 
 .hiddenLabel {
   opacity: 0;
-  color: #fff;
+  color: inherit;
 }
 
 .centerAbsolute {
@@ -35,26 +35,44 @@
 }
 
 .whiteBox {
-  background: #141414;
+  background: #ffffff;
   border-radius: 8px;
   width: 100%;
   min-height: 100px;
   overflow: hidden;
   transition: all 0.3s ease-in-out;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dark-theme .whiteBox {
+  background: #141414;
+  border: none;
 }
 
 .shadow {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .shadow {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .shadow:hover {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.dark-theme .shadow:hover {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .line {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   width: 100%;
   margin: 5px auto;
+}
+
+.dark-theme .line {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .left {

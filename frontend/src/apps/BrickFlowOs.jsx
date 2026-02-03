@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { selectAuth } from '@/redux/auth/selectors';
 import { AppContextProvider } from '@/context/appContext';
 import { ProfileContextProvider } from '@/context/profileContext';
+import { ThemeContextProvider } from '@/context/ThemeContext';
 import PageLoader from '@/components/PageLoader';
 import AuthRouter from '@/router/AuthRouter';
 import Localization from '@/locale/Localization';

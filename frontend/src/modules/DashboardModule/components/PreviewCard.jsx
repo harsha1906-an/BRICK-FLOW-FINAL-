@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Col, Progress, Spin } from 'antd';
 import useLanguage from '@/locale/useLanguage';
+import { useThemeContext } from '@/context/ThemeContext';
 
 const colours = {
   draft: '#595959',
@@ -73,10 +74,27 @@ const defaultInvoiceStatistics = [
 
 const PreviewState = ({ tag, value }) => {
   const translate = useLanguage();
+  const { isDarkMode } = useThemeContext();
+
   return (
-    <div style={{ marginBottom: 5, color: 'rgba(255, 255, 255, 0.65)' }}>
-      <div className="left alignLeft capitalize" style={{ color: 'rgba(255, 255, 255, 0.45)' }}>{translate(tag)}</div>
-      <div className="right alignRight" style={{ color: '#fff' }}>{value} %</div>
+    <div
+      style={{
+        marginBottom: 5,
+        color: isDarkMode ? 'rgba(255, 255, 255, 0.65)' : 'rgba(0, 0, 0, 0.65)'
+      }}
+    >
+      <div
+        className="left alignLeft capitalize"
+        style={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.45)' }}
+      >
+        {translate(tag)}
+      </div>
+      <div
+        className="right alignRight"
+        style={{ color: isDarkMode ? '#fff' : 'rgba(0, 0, 0, 0.85)' }}
+      >
+        {value} %
+      </div>
       <Progress
         percent={value}
         showInfo={false}

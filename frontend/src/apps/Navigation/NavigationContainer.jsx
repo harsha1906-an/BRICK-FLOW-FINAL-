@@ -34,6 +34,7 @@ import {
 const { Sider } = Layout;
 
 import useMobile from '@/hooks/useMobile'; // Keep hook for other logic if needed
+import { useThemeContext } from '@/context/ThemeContext';
 
 export default function Navigation() {
   return (
@@ -50,6 +51,7 @@ export default function Navigation() {
 
 function Sidebar({ collapsible, isMobile = false }) {
   let location = useLocation();
+  const { isDarkMode } = useThemeContext();
 
   const { state: stateApp, appContextAction } = useAppContext();
   const { isNavMenuClose } = stateApp;
@@ -193,7 +195,7 @@ function Sidebar({ collapsible, isMobile = false }) {
       style={{
         overflow: 'auto',
         height: '100vh',
-        background: isMobile ? 'transparent' : undefined, // Transparent for glass effect
+        background: isDarkMode ? (isMobile ? 'transparent' : '#0c0d0e') : '#fff', // Pure dark in dark mode
 
         // <--- MOBILE SIDEBAR POSITIONING
         position: isMobile ? 'absolute' : 'relative',
@@ -205,7 +207,7 @@ function Sidebar({ collapsible, isMobile = false }) {
           // borderRadius: '8px',
         }),
       }}
-      theme={isMobile ? 'light' : 'dark'}
+      theme={isDarkMode ? 'dark' : 'light'}
     >
       <div
         className="logo"
@@ -224,11 +226,11 @@ function Sidebar({ collapsible, isMobile = false }) {
       <Menu
         items={items}
         mode="inline"
-        theme={'light'}
+        theme={isDarkMode ? 'dark' : 'light'}
         selectedKeys={[currentPath]}
         style={{
           width: 256,
-          background: isMobile ? 'transparent' : undefined // Transparent menu
+          background: isMobile ? 'transparent' : (isDarkMode ? '#0c0d0e' : '#fff') // Pure dark in dark mode
         }}
       />
     </Sider>
@@ -237,6 +239,7 @@ function Sidebar({ collapsible, isMobile = false }) {
 
 function MobileSidebar() {
   const [visible, setVisible] = useState(false);
+  const { isDarkMode } = useThemeContext();
   const showDrawer = () => {
     setVisible(true);
   };
@@ -262,7 +265,7 @@ function MobileSidebar() {
         onClose={onClose}
         open={visible}
         styles={{
-          body: { padding: 0, height: '100%', backdropFilter: 'blur(20px)', background: 'rgba(0, 21, 41, 0.7)' }
+          body: { padding: 0, height: '100%', backdropFilter: 'blur(20px)', background: isDarkMode ? 'rgba(12, 13, 14, 0.7)' : 'rgba(255, 255, 255, 0.7)' }
         }}
         style={{ background: 'transparent' }}
       >

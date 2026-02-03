@@ -2,10 +2,13 @@ import { Tag, Divider, Row, Col, Spin, Tooltip } from 'antd';
 import { useMoney } from '@/settings';
 import { selectMoneyFormat } from '@/redux/settings/selectors';
 import { useSelector } from 'react-redux';
+import { useThemeContext } from '@/context/ThemeContext';
 
 export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isLoading = false }) {
   const { moneyFormatter } = useMoney();
   const money_format_settings = useSelector(selectMoneyFormat);
+  const { isDarkMode } = useThemeContext();
+
   return (
     <Col
       className="gutter-row"
@@ -17,7 +20,12 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
     >
       <div
         className="whiteBox shadow"
-        style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: 13, minHeight: '106px', height: '100%' }}
+        style={{
+          color: isDarkMode ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)',
+          fontSize: 13,
+          minHeight: '106px',
+          height: '100%'
+        }}
       >
         <div className="pad15 strong" style={{ textAlign: 'center', justifyContent: 'center', padding: window.innerWidth <= 768 ? '8px' : undefined }}>
           <h3
@@ -34,7 +42,13 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
         <div className="pad15" style={{ padding: window.innerWidth <= 768 ? '8px' : undefined }}>
           <Row gutter={[0, 0]} justify="space-between" wrap={false}>
             <Col className="gutter-row" flex="85px" style={{ textAlign: 'left' }}>
-              <div className="left" style={{ whiteSpace: 'nowrap', color: 'rgba(255, 255, 255, 0.45)' }}>
+              <div
+                className="left"
+                style={{
+                  whiteSpace: 'nowrap',
+                  color: isDarkMode ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.45)'
+                }}
+              >
                 {prefix}
               </div>
             </Col>

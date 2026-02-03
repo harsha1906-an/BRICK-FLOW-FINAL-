@@ -6,9 +6,13 @@
 .list-checked-item {
   position: relative;
   display: block;
-  color: #fff;
+  color: inherit;
   margin-bottom: 30px;
   list-style: none;
+}
+
+.dark-theme .list-checked-item {
+  color: #fff;
 }
 
 .list-checked-item-right {
@@ -37,7 +41,10 @@
   left: 0;
 }
 
-
 .sideContent * {
+  color: inherit;
+}
+
+.dark-theme .sideContent * {
   color: #fff !important;
 }
